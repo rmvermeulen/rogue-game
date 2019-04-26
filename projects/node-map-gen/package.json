@@ -8,6 +8,7 @@
   "devDependencies": {
     "@types/jest": "^23.3.12",
     "@types/node": "^10.12.18",
+    "@types/ramda": "^0.26.8",
     "jest": "~23.6.0",
     "prettier": "1.15.3",
     "rimraf": "^2.6.3",
@@ -29,6 +30,7 @@
   "author": "Jakub Synowiec <github@jakubsynowiec.info>",
   "license": "Apache-2.0",
   "dependencies": {
+    "ramda": "^0.26.1",
     "tslib": "~1.9.3"
   }
 }
