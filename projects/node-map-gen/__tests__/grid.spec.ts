@@ -1,41 +1,84 @@
-import { Grid, IGridOptions } from '../src/grid';
-import { times, flip } from 'ramda';
+import { Grid, IGridOptions, IRoom } from '../src/grid';
+import { times, flip, pipe, uniq, length, map } from 'ramda';
 
-const doN = flip(times);
+const doN = (flip(times) as unknown) as <T = any>(
+  n: number,
+  fn: (n: number) => T,
+) => T[];
 
 describe.each([
   {
     width: 5,
     height: 5,
+    rooms: 4,
   },
-])('grid class', (options: IGridOptions) => {
-  const grid = Grid.create(options);
+  {
+    width: 4,
+    height: 7,
+    rooms: 4,
+  },
+  // {
+  //   width: 8,
+  //   height: 6,
+  //   rooms: 12,
+  // },
+])('grid class', ({ width, height, rooms }: IGridOptions) => {
+  let grid: Grid;
 
-  expect(grid).toBeDefined();
+  beforeAll(() => {
+    grid = Grid.create({ width, height, rooms });
+  });
+
+  it('is a grid', () => {
+    expect(grid).toBeDefined();
+    expect(grid).toMatchObject({ width, height });
+    expect(grid.cells).toHaveLength(width * height);
+  });
 
   it('can find rows', () => {
-    expect(grid.row(0)).toHaveLength(options.width);
-    expect(grid.row(options.height)).toHaveLength(0);
+    expect(grid.row(0)).toHaveLength(width);
+    expect(grid.row(height)).toHaveLength(0);
   });
 
   it('can find columns', () => {
-    expect(grid.column(0)).toHaveLength(options.height);
-    expect(grid.column(options.width)).toHaveLength(0);
+    expect(grid.column(0)).toHaveLength(height);
+    expect(grid.column(width)).toHaveLength(0);
   });
 
   it('can list the unique room ids', () => {
-    expect(grid.listRooms()).toHaveLength(1);
+    expect(grid.listRooms()).toHaveLength(rooms);
+  });
+
+  it('can find information on rooms', () => {
+    const roomList: IRoom[] = doN(rooms, rid => grid.findRoomById(rid));
+    for (const room of roomList) {
+      expect(room).toMatchObject({
+        cells: expect.any(Array),
+        size: expect.any(Number),
+      });
+    }
   });
 
   it('can find cells by position', () => {
-    doN(options.width, x =>
-      doN(options.height, y =>
-        expect(grid.cellAt(x, y)).toMatchObject({ x, y }),
-      ),
-    );
+    doN(width, x => {
+      doN(height, y => {
+        expect(grid.cellAt(x, y)).toMatchObject({ x, y });
+      });
+    });
   });
 
   it('can be displayed in the cli', () => {
-    expect(grid.display()).toMatchSnapshot();
+    const display = grid.display();
+    console.log(display);
+    expect(typeof display).toBe('string');
+    const lines = display.split('\n');
+    expect(lines).toHaveLength(1 + height * 2);
+
+    expect(
+      pipe(
+        map(length),
+        uniq,
+      )(lines as any),
+    ).toHaveLength(1);
   });
 });

@@ -1,10 +1,12 @@
-import { times, objOf, whereEq } from 'ramda';
+import { times, objOf, whereEq, propEq, pluck, repeat, trim } from 'ramda';
+import * as os from 'os';
 
 const createObjects = times(objOf('id'));
 
 export interface IGridOptions {
   width: number;
   height: number;
+  rooms: number;
 }
 
 export interface ICell {
@@ -14,11 +16,18 @@ export interface ICell {
   room: number;
 }
 
+export interface IRoom {
+  id: number;
+  size: number;
+  cells: ICell['id'][];
+}
+
 export class Grid {
-  public readonly width;
-  public readonly height;
+  public readonly width: number;
+  public readonly height: number;
+
   public readonly cells: ICell[];
-  private constructor({ width, height }: IGridOptions) {
+  private constructor({ width, height, rooms }: IGridOptions) {
     this.width = width;
     this.height = height;
 
@@ -26,7 +35,7 @@ export class Grid {
       Object.assign(cell, {
         x: cell.id % width,
         y: Math.floor(cell.id / width),
-        room: 0,
+        room: Math.floor(Math.random() * rooms),
       }),
     );
   }
@@ -55,7 +64,33 @@ export class Grid {
     );
   }
 
+  findRoomById(id: IRoom['id']): IRoom | undefined {
+    const cells = this.cells.filter(propEq('room', id));
+    return cells.length
+      ? {
+          id,
+          size: cells.length,
+          cells: pluck('id', cells),
+        }
+      : undefined;
+  }
+
   display(): string {
-    return '';
+    let header = `+${repeat('---+', this.width).join('')}`;
+    const lines = [header];
+    for (let y = 0; y < this.height; ++y) {
+      let line = '| ';
+      let sep = '';
+      for (let x = 0; x < this.width; ++x) {
+        const cell = this.cellAt(x, y);
+        const east = this.cellAt(x + 1, y);
+        const south = this.cellAt(x, y + 1);
+        line += `${cell.room} ${east && east.room === cell.room ? '  ' : '| '}`;
+        sep += south && south.room === cell.room ? '+   ' : '+---';
+      }
+      lines.push(line, sep + '+');
+    }
+
+    return lines.map(trim).join(os.EOL);
   }
 }
