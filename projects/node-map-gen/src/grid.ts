@@ -45,4 +45,17 @@ export class Grid {
   column(x: number): ICell[] {
     return this.cells.filter(whereEq({ x }));
   }
+
+  listRooms(): number[] {
+    return Array.from(
+      this.cells.reduce((ids, cell) => {
+        ids.add(cell.room);
+        return ids;
+      }, new Set<number>()),
+    );
+  }
+
+  display(): string {
+    return '';
+  }
 }
