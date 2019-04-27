@@ -21,11 +21,17 @@ const createObjects = times(objOf('id'));
 const colors = (() => {
   const src = [
     chalk.red,
+    chalk.redBright,
     chalk.green,
+    chalk.greenBright,
     chalk.blue,
+    chalk.blueBright,
     chalk.yellow,
+    chalk.yellowBright,
     chalk.magenta,
+    chalk.magentaBright,
     chalk.cyan,
+    chalk.cyanBright,
   ];
 
   return shuffle(src);

@@ -28,11 +28,11 @@ describe.each([
     height: 7,
     rooms: 6,
   },
-  // {
-  //   width: 8,
-  //   height: 6,
-  //   rooms: 12,
-  // },
+  {
+    width: 12,
+    height: 12,
+    rooms: 10,
+  },
 ])('grid class', ({ width, height, rooms }: IGridOptions) => {
   let grid: Grid;
 
