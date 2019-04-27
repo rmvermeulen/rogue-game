@@ -1,5 +1,5 @@
 import { Grid, IGridOptions, IRoom } from '../src/grid';
-import { times, flip, pipe, uniq, length, map } from 'ramda';
+import { times, flip, pipe, uniq, length, map, splitWhen, propEq } from 'ramda';
 
 const doN = (flip(times) as unknown) as <T = any>(
   n: number,
@@ -72,13 +72,16 @@ describe.each([
     console.log(display);
     expect(typeof display).toBe('string');
     const lines = display.split('\n');
-    expect(lines).toHaveLength(1 + height * 2);
+    const [mapLines, [, ...roomLines]] = splitWhen(propEq('length', 0), lines);
+
+    expect(mapLines).toHaveLength(1 + height * 2);
+    expect(roomLines).toHaveLength(rooms);
 
     expect(
       pipe(
         map(length),
         uniq,
-      )(lines as any),
+      )(mapLines as any),
     ).toHaveLength(1);
   });
 });

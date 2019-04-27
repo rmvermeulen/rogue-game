@@ -91,6 +91,20 @@ export class Grid {
       lines.push(line, sep + '+');
     }
 
+    const rooms = this.listRooms()
+      .sort()
+      .map(id => this.findRoomById(id))
+      .filter(Boolean);
+
+    if (rooms.length) {
+      lines.push('');
+      lines.push(
+        ...rooms.map(
+          ({ id, size, cells }) => `room ${id} size=${size} cells=${cells}`,
+        ),
+      );
+    }
+
     return lines.map(trim).join(os.EOL);
   }
 }
