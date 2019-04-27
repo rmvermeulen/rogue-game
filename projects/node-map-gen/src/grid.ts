@@ -4,6 +4,24 @@ import { objOf, pluck, propEq, repeat, times, trim, whereEq } from 'ramda';
 
 const createObjects = times(objOf('id'));
 
+const colors = (() => {
+  const src = [
+    chalk.red,
+    chalk.green,
+    chalk.blue,
+    chalk.yellow,
+    chalk.magenta,
+    chalk.cyan,
+  ];
+  const randomized = [];
+  while (src.length) {
+    const i = Math.floor(Math.random() * src.length);
+    randomized.push(...src.splice(i, 1));
+  }
+
+  return randomized;
+})();
+
 export interface IGridOptions {
   width: number;
   height: number;
@@ -78,8 +96,6 @@ export class Grid {
   }
 
   public display(): string {
-    const colors = [chalk.red, chalk.green, chalk.blue];
-
     const header = `+${repeat('---+', this.width).join('')}`;
     const lines = [header];
     for (let y = 0; y < this.height; ++y) {
