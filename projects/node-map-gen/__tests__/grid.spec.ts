@@ -11,12 +11,22 @@ describe.each([
   {
     width: 5,
     height: 5,
+    rooms: 2,
+  },
+  {
+    width: 5,
+    height: 5,
+    rooms: 3,
+  },
+  {
+    width: 5,
+    height: 5,
     rooms: 4,
   },
   {
     width: 4,
     height: 7,
-    rooms: 4,
+    rooms: 6,
   },
   // {
   //   width: 8,

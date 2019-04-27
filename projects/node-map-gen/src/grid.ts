@@ -1,6 +1,20 @@
 import chalk from 'chalk';
 import * as os from 'os';
-import { objOf, pluck, propEq, repeat, times, trim, whereEq } from 'ramda';
+import { flatten, objOf, pluck, propEq, repeat, times, trim, whereEq } from 'ramda';
+
+const shuffle = ([...input]) => {
+  const randomized = [];
+  while (input.length) {
+    const i = Math.floor(Math.random() * input.length);
+    randomized.push(...input.splice(i, 1));
+  }
+
+  return randomized;
+};
+
+// weighted pick
+const wt = <T>([item, ...rest]: T[]): T =>
+  rest.length === 0 ? item : Math.random() > 0.5 ? item : wt(rest);
 
 const createObjects = times(objOf('id'));
 
@@ -13,13 +27,8 @@ const colors = (() => {
     chalk.magenta,
     chalk.cyan,
   ];
-  const randomized = [];
-  while (src.length) {
-    const i = Math.floor(Math.random() * src.length);
-    randomized.push(...src.splice(i, 1));
-  }
 
-  return randomized;
+  return shuffle(src);
 })();
 
 export interface IGridOptions {
@@ -50,11 +59,22 @@ export class Grid {
     this.width = width;
     this.height = height;
 
+    const avgRoomSize = Math.floor((width * height) / rooms);
+    const roomIds = times(n => repeat(n, avgRoomSize), rooms);
+    let remainder = width * height - rooms * avgRoomSize;
+    while (remainder) {
+      const r = Math.floor(Math.random() * rooms);
+      roomIds[r].push(r);
+      --remainder;
+    }
+
+    const pool = shuffle(flatten(roomIds));
+
     this.cells = createObjects(width * height).map(cell => ({
       ...cell,
       x: cell.id % width,
       y: Math.floor(cell.id / width),
-      room: Math.floor(Math.random() * rooms),
+      room: pool.pop(),
     }));
   }
   public static create(options: IGridOptions) {
