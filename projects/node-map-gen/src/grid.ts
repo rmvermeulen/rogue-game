@@ -1,5 +1,6 @@
-import { times, objOf, whereEq, propEq, pluck, repeat, trim } from 'ramda';
+import chalk from 'chalk';
 import * as os from 'os';
+import { objOf, pluck, propEq, repeat, times, trim, whereEq } from 'ramda';
 
 const createObjects = times(objOf('id'));
 
@@ -31,41 +32,42 @@ export class Grid {
     this.width = width;
     this.height = height;
 
-    this.cells = createObjects(width * height).map(cell =>
-      Object.assign(cell, {
-        x: cell.id % width,
-        y: Math.floor(cell.id / width),
-        room: Math.floor(Math.random() * rooms),
-      }),
-    );
+    this.cells = createObjects(width * height).map(cell => ({
+      ...cell,
+      x: cell.id % width,
+      y: Math.floor(cell.id / width),
+      room: Math.floor(Math.random() * rooms),
+    }));
   }
-  static create(options: IGridOptions) {
+  public static create(options: IGridOptions) {
     return new Grid(options);
   }
 
-  cellAt(x: number, y: number): ICell | undefined {
+  public cellAt(x: number, y: number): ICell | undefined {
     return this.cells.find(whereEq({ x, y }));
   }
 
-  row(y: number): ICell[] {
+  public row(y: number): ICell[] {
     return this.cells.filter(whereEq({ y }));
   }
 
-  column(x: number): ICell[] {
+  public column(x: number): ICell[] {
     return this.cells.filter(whereEq({ x }));
   }
 
-  listRooms(): number[] {
+  public listRooms(): number[] {
     return Array.from(
       this.cells.reduce((ids, cell) => {
         ids.add(cell.room);
+
         return ids;
       }, new Set<number>()),
     );
   }
 
-  findRoomById(id: IRoom['id']): IRoom | undefined {
+  public findRoomById(id: IRoom['id']): IRoom | undefined {
     const cells = this.cells.filter(propEq('room', id));
+
     return cells.length
       ? {
           id,
@@ -75,8 +77,10 @@ export class Grid {
       : undefined;
   }
 
-  display(): string {
-    let header = `+${repeat('---+', this.width).join('')}`;
+  public display(): string {
+    const colors = [chalk.red, chalk.green, chalk.blue];
+
+    const header = `+${repeat('---+', this.width).join('')}`;
     const lines = [header];
     for (let y = 0; y < this.height; ++y) {
       let line = '| ';
@@ -85,7 +89,10 @@ export class Grid {
         const cell = this.cellAt(x, y);
         const east = this.cellAt(x + 1, y);
         const south = this.cellAt(x, y + 1);
-        line += `${cell.room} ${east && east.room === cell.room ? '  ' : '| '}`;
+
+        const roomStr = colors[cell.room % colors.length](String(cell.room));
+
+        line += `${roomStr} ${east && east.room === cell.room ? '  ' : '| '}`;
         sep += south && south.room === cell.room ? '+   ' : '+---';
       }
       lines.push(line, sep + '+');

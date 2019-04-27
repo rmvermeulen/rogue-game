@@ -1,5 +1,6 @@
+import { flip, length, map, pipe, propEq, splitWhen, times, uniq } from 'ramda';
+import stripAnsi from 'strip-ansi';
 import { Grid, IGridOptions, IRoom } from '../src/grid';
-import { times, flip, pipe, uniq, length, map, splitWhen, propEq } from 'ramda';
 
 const doN = (flip(times) as unknown) as <T = any>(
   n: number,
@@ -71,7 +72,7 @@ describe.each([
     const display = grid.display();
     console.log(display);
     expect(typeof display).toBe('string');
-    const lines = display.split('\n');
+    const lines = display.split('\n').map(stripAnsi);
     const [mapLines, [, ...roomLines]] = splitWhen(propEq('length', 0), lines);
 
     expect(mapLines).toHaveLength(1 + height * 2);
