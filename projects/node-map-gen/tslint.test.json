@@ -1,0 +1,10 @@
+{
+  "extends": ["./tslint.json"],
+  "rules": {
+    "no-implicit-dependencies": [true, "dev"],
+    "typedef": false,
+    "no-any": false,
+    "no-unsafe-any": false,
+    "no-console": false
+  }
+}
