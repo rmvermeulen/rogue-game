@@ -1,6 +1,21 @@
 import chalk from 'chalk';
 import * as os from 'os';
-import { flatten, objOf, pluck, propEq, repeat, times, trim, whereEq } from 'ramda';
+import {
+  equals,
+  filter,
+  flatten,
+  head,
+  map,
+  pipe,
+  pluck,
+  propEq,
+  propSatisfies,
+  range,
+  repeat,
+  times,
+  trim,
+  whereEq,
+} from 'ramda';
 
 const shuffle = ([...input]) => {
   const randomized = [];
@@ -15,8 +30,6 @@ const shuffle = ([...input]) => {
 // weighted pick
 const wt = <T>([item, ...rest]: T[]): T =>
   rest.length === 0 ? item : Math.random() > 0.5 ? item : wt(rest);
-
-const createObjects = times(objOf('id'));
 
 const colors = (() => {
   const src = [
@@ -65,7 +78,7 @@ export class Grid {
     this.width = width;
     this.height = height;
 
-    const avgRoomSize = Math.floor((width * height) / rooms);
+    const avgRoomSize = Math.max(0, Math.floor((width * height) / rooms) - 1);
     const roomIds = times(n => repeat(n, avgRoomSize), rooms);
     let remainder = width * height - rooms * avgRoomSize;
     while (remainder) {
@@ -74,14 +87,53 @@ export class Grid {
       --remainder;
     }
 
-    const pool = shuffle(flatten(roomIds));
+    const pool: number[] = shuffle(flatten(roomIds));
 
-    this.cells = createObjects(width * height).map(cell => ({
-      ...cell,
-      x: cell.id % width,
-      y: Math.floor(cell.id / width),
-      room: pool.pop(),
-    }));
+    const popSpecific = (n: number): number | undefined => {
+      if (!pool.includes(n)) {
+        return undefined;
+      }
+      const i = pool.findIndex(equals(n));
+      const [popped] = pool.splice(i, 1);
+      return popped;
+    };
+
+    this.cells = pipe(
+      map((id: number) => ({
+        id,
+        x: id % width,
+        y: Math.floor(id / width),
+      })),
+      cells => {
+        const { max, abs } = Math;
+        return cells.map(cell => {
+          const trySame = wt([true, true, false]);
+          let room: number;
+          if (trySame) {
+            const neighbor: typeof cell | undefined = pipe<
+              typeof cells,
+              typeof cells,
+              typeof cells,
+              typeof cell
+            >(
+              filter(propSatisfies<number, typeof cell>(Boolean, 'room')),
+              filter(({ x, y }: typeof cell) => {
+                const maxDistance = max(abs(cell.x - x), abs(cell.y - y));
+                return maxDistance === 1;
+              }),
+              head,
+            )(cells);
+            if (neighbor) {
+              room = popSpecific(neighbor.id);
+            }
+          }
+          if (room === undefined) {
+            room = pool.pop();
+          }
+          return { ...cell, room };
+        });
+      },
+    )(range(0, width * height));
   }
   public static create(options: IGridOptions) {
     return new Grid(options);
