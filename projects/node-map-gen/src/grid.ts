@@ -3,6 +3,7 @@ import * as os from 'os';
 import {
   allPass,
   equals,
+  filter,
   flatten,
   lte,
   map,
@@ -13,11 +14,10 @@ import {
   repeat,
   tap,
   times,
-  filter,
   trim,
+  uniq,
   where,
   whereEq,
-  uniq,
 } from 'ramda';
 
 const shuffle = ([...input]) => {
@@ -98,6 +98,7 @@ export class Grid {
         return undefined;
       }
       const [popped] = pool.splice(i, 1);
+
       return popped;
     };
 
@@ -178,6 +179,24 @@ export class Grid {
       : undefined;
   }
 
+  /** @function display
+   * example output:
+   * +---+---+---+---+---+
+   * | 1   1 | 2   2 | 0 |
+   * +---+   +   +   +---+
+   * | 0 | 1 | 2   2 | 1 |
+   * +   +   +   +   +---+
+   * | 0 | 1 | 2   2 | 0 |
+   * +   +   +   +   +   +
+   * | 0 | 1 | 2   2 | 0 |
+   * +   +---+---+---+---+
+   * | 0   0   0 | 1   1 |
+   * +---+---+---+---+---+
+   *
+   * room 0 size=9 cells=4,5,10,14,15,19,20,21,22
+   * room 1 size=8 cells=0,1,6,9,11,16,23,24
+   * room 2 size=8 cells=2,3,7,8,12,13,17,18
+   */
   public display(): string {
     const header = `+${repeat('---+', this.width).join('')}`;
     const lines = [header];
