@@ -1,6 +1,18 @@
-import { flip, length, map, pipe, propEq, splitWhen, times, uniq } from 'ramda';
+import {
+  filter,
+  flip,
+  length,
+  map,
+  pipe,
+  pluck,
+  prop,
+  propEq,
+  splitWhen,
+  times,
+  uniq,
+} from 'ramda';
 import stripAnsi from 'strip-ansi';
-import { Grid, IGridOptions, IRoom } from '../src/grid';
+import { Grid, ICell, IGridOptions, IRoom } from '../src/grid';
 
 const doN = (flip(times) as unknown) as <T = any>(
   n: number,
@@ -83,16 +95,34 @@ describe.each([
     console.log(display);
     expect(typeof display).toBe('string');
     const lines = display.split('\n').map(stripAnsi);
-    const [mapLines, [, ...roomLines]] = splitWhen(propEq('length', 0), lines);
+    const [mapLines, [, ...roomLines]] = splitWhen<string>(
+      propEq('length', 0),
+      lines,
+    );
 
-    expect(mapLines).toHaveLength(1 + height * 2);
+    expect(mapLines).toHaveLength(height * 2 + 1);
     expect(roomLines).toHaveLength(rooms);
 
     expect(
       pipe(
-        map(length),
+        pluck('length'),
         uniq,
-      )(mapLines as any),
+      )(mapLines),
     ).toHaveLength(1);
+  });
+
+  it('does not have isolated cells', () => {
+    const { cells } = grid;
+    for (const cell of cells) {
+      const neighborRooms: number[] = pipe(
+        filter(
+          ({ x, y }: ICell) =>
+            Math.abs(cell.x - x) + Math.abs(cell.y - y) === 1,
+        ),
+        (pluck as any)('room'),
+        uniq,
+      )(cells);
+      expect(neighborRooms).toContain(cell.room);
+    }
   });
 });
