@@ -1,9 +1,21 @@
 {
   "name": "node-typescript-boilerplate",
-  "version": "0.0.0",
   "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
-  "engines": {
-    "node": ">= 10.13 <11"
+  "license": "Apache-2.0",
+  "author": "Jakub Synowiec <github@jakubsynowiec.info>",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "tsc -p tsconfig.release.json",
+    "build:watch": "tsc -w -p tsconfig.release.json",
+    "clean": "rimraf coverage build tmp",
+    "lint": "tslint -t stylish --project \"tsconfig.json\"",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "ramda": "^0.26.1",
+    "tslib": "~1.9.3"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
@@ -11,30 +23,26 @@
     "@types/node": "^11.13.8",
     "@types/ramda": "^0.26.8",
     "@types/strip-ansi": "^5.2.1",
-    "jest": "~24.7.1",
-    "prettier": "1.17.0",
+    "expect-more-jest": "^2.4.1",
+    "husky": "^2.1.0",
+    "jest": "^24.7.1",
+    "jest-extended": "^0.11.1",
+    "jest-watch-suspend": "^1.1.1",
+    "jest-watch-typeahead": "^0.3.0",
+    "lint-staged": "^8.1.5",
+    "prettier": "^1.17.0",
+    "prettier-package-json": "^2.1.0",
+    "pretty-quick": "^1.10.0",
     "rimraf": "^2.6.3",
     "strip-ansi": "^5.2.0",
-    "ts-jest": "~24.0.2",
-    "tslint": "~5.16.0",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.16.0",
     "tslint-config-prettier": "1.18.0",
     "tslint-microsoft-contrib": "~6.1.1",
     "tsutils": "~3.10.0",
     "typescript": "^3.4.5"
   },
-  "scripts": {
-    "clean": "rimraf coverage build tmp",
-    "build": "tsc -p tsconfig.release.json",
-    "build:watch": "tsc -w -p tsconfig.release.json",
-    "lint": "tslint -t stylish --project \"tsconfig.json\"",
-    "test": "jest --coverage",
-    "test:watch": "jest --watch"
-  },
-  "author": "Jakub Synowiec <github@jakubsynowiec.info>",
-  "license": "Apache-2.0",
-  "dependencies": {
-    "chalk": "^2.4.2",
-    "ramda": "^0.26.1",
-    "tslib": "~1.9.3"
+  "engines": {
+    "node": ">= 10.13 <11"
   }
 }
