@@ -1,20 +1,23 @@
 import chalk from 'chalk';
 import * as os from 'os';
 import {
+  allPass,
   equals,
-  filter,
   flatten,
-  head,
+  lte,
   map,
   pipe,
   pluck,
   propEq,
-  propSatisfies,
   range,
   repeat,
+  tap,
   times,
+  filter,
   trim,
+  where,
   whereEq,
+  uniq,
 } from 'ramda';
 
 const shuffle = ([...input]) => {
@@ -90,10 +93,10 @@ export class Grid {
     const pool: number[] = shuffle(flatten(roomIds));
 
     const popSpecific = (n: number): number | undefined => {
-      if (!pool.includes(n)) {
+      const i = pool.findIndex(equals(n));
+      if (i === -1) {
         return undefined;
       }
-      const i = pool.findIndex(equals(n));
       const [popped] = pool.splice(i, 1);
       return popped;
     };
@@ -103,36 +106,40 @@ export class Grid {
         id,
         x: id % width,
         y: Math.floor(id / width),
+        room: -1,
       })),
-      cells => {
-        const { max, abs } = Math;
-        return cells.map(cell => {
+      tap(cells => {
+        cells.forEach(cell => {
           const trySame = wt([true, true, false]);
           let room: number;
           if (trySame) {
-            const neighbor: typeof cell | undefined = pipe<
-              typeof cells,
-              typeof cells,
-              typeof cells,
-              typeof cell
-            >(
-              filter(propSatisfies<number, typeof cell>(Boolean, 'room')),
-              filter(({ x, y }: typeof cell) => {
-                const maxDistance = max(abs(cell.x - x), abs(cell.y - y));
-                return maxDistance === 1;
-              }),
-              head,
-            )(cells);
-            if (neighbor) {
-              room = popSpecific(neighbor.id);
+            const neighbors = cells
+              // has valid room, which still has entries
+              .filter(
+                where({
+                  room: allPass([lte(0), r => pool.includes(r)]),
+                }),
+              )
+              // manhattan distance
+              .filter(
+                ({ x, y }: typeof cell) =>
+                  Math.abs(cell.x - x) + Math.abs(cell.y - y) === 1,
+              );
+            for (const n of neighbors) {
+              const popped = popSpecific(n.room);
+              if (popped !== undefined) {
+                room = popped;
+                break;
+              }
             }
           }
           if (room === undefined) {
             room = pool.pop();
           }
-          return { ...cell, room };
+          // update cell in-place
+          cell.room = room;
         });
-      },
+      }),
     )(range(0, width * height));
   }
   public static create(options: IGridOptions) {
@@ -152,13 +159,11 @@ export class Grid {
   }
 
   public listRooms(): number[] {
-    return Array.from(
-      this.cells.reduce((ids, cell) => {
-        ids.add(cell.room);
-
-        return ids;
-      }, new Set<number>()),
-    );
+    return pipe<ICell[], number[], number[], number[]>(
+      pluck('room'),
+      uniq,
+      filter(lte(0)),
+    )(this.cells);
   }
 
   public findRoomById(id: IRoom['id']): IRoom | undefined {
