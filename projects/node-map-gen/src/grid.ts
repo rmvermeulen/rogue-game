@@ -24,9 +24,6 @@ import {
 } from 'ramda';
 import { random } from './random';
 
-const weightedPick = <T>([item, ...rest]: T[]): T =>
-  rest.length === 0 ? item : random.bool() ? item : weightedPick(rest);
-
 const colors = (() => {
   const src = [
     chalk.red,
@@ -223,7 +220,7 @@ export class Grid {
       })),
       tap((cells: ICell[]) => {
         cells.forEach((cell: ICell) => {
-          const trySame = weightedPick([true, true, false]);
+          const trySame = random.weighted([true, false], [15, 1]);
           let room: number;
           if (trySame) {
             // has valid room, which still has entries

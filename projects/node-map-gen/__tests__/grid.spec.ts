@@ -130,7 +130,7 @@ describe.each(gridData)(
 
         return total + (isPartOfRoom ? 0 : 1);
       }, 0);
-      expect(isolatedCells / cells.length).toBeLessThan(0.075);
+      expect(isolatedCells / cells.length).toBeLessThan(0.15);
     });
 
     it('can be displayed in the cli', () => {
