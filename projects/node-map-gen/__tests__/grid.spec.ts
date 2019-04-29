@@ -13,11 +13,7 @@ import {
 } from 'ramda';
 import stripAnsi from 'strip-ansi';
 import { Grid, ICell, IGridOptions, IRoom } from '../src/grid';
-
-const doN = (flip(times) as unknown) as <T = any>(
-  n: number,
-  fn: (n: number) => T,
-) => T[];
+import { generate } from '../src/utils';
 
 describe.each([
   {
@@ -73,7 +69,7 @@ describe.each([
   });
 
   it('can find information on rooms', () => {
-    const roomList: IRoom[] = doN(rooms, rid => grid.findRoomById(rid));
+    const roomList: IRoom[] = generate(rooms, rid => grid.findRoomById(rid));
     for (const room of roomList) {
       expect(room).toMatchObject({
         cells: expect.any(Array),
@@ -83,8 +79,8 @@ describe.each([
   });
 
   it('can find cells by position', () => {
-    doN(width, x => {
-      doN(height, y => {
+    generate(width, x => {
+      generate(height, y => {
         expect(grid.cellAt(x, y)).toMatchObject({ x, y });
       });
     });
