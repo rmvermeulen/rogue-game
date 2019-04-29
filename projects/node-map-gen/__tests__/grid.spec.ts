@@ -118,6 +118,7 @@ describe.each([
     const display = grid.display();
 
     expect(display).toMatchSnapshot();
+    expect(stripAnsi(display)).toMatchSnapshot();
     const lines = display.split('\n').map(stripAnsi);
     const [mapLines, [, ...roomLines]] = splitWhen<string>(
       propEq('length', 0),
