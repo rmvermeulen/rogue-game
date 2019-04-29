@@ -20,7 +20,6 @@
       "property-declaration",
       "member-variable-declaration"
     ],
-    "insecure-random": false,
     "completed-docs": false,
     "no-unnecessary-bind": false,
     "no-reserved-keywords": false,
