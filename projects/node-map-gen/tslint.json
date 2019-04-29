@@ -25,6 +25,7 @@
     "no-reserved-keywords": false,
     "no-function-constructor-with-string-args": false,
     "no-increment-decrement": false,
-    "increment-decrement": true
+    "increment-decrement": true,
+    "no-this-assignment": [true, { "allow-destructuring": true }]
   }
 }
