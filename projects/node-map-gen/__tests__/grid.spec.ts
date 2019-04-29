@@ -1,3 +1,5 @@
+jest.mock('../src/random');
+
 import {
   contains,
   filter,
@@ -103,18 +105,13 @@ describe.each([
 
       return total + (isPartOfRoom ? 0 : 1);
     }, 0);
-    console.log(`
-    all cells ${cells.length}
-    isolated  ${isolatedCells}
-    thing     ${isolatedCells / cells.length}
-    `);
     expect(isolatedCells / cells.length).toBeLessThan(0.05);
   });
 
   it('can be displayed in the cli', () => {
     const display = grid.display();
-    console.log(display);
-    expect(typeof display).toBe('string');
+
+    expect(display).toMatchSnapshot();
     const lines = display.split('\n').map(stripAnsi);
     const [mapLines, [, ...roomLines]] = splitWhen<string>(
       propEq('length', 0),

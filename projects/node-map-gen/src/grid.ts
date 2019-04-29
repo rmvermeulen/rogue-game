@@ -4,7 +4,6 @@ import {
   allPass,
   equals,
   filter,
-  find,
   flatten,
   lte,
   map,
@@ -16,26 +15,15 @@ import {
   tap,
   times,
   trim,
-  unary,
   uniq,
   when,
   where,
   whereEq,
 } from 'ramda';
-
-// tslint:disable-next-line: no-any
-const shuffle = <T extends any[]>([...input]: T): T => {
-  const randomized = [] as T;
-  while (input.length > 0) {
-    const i = Math.floor(Math.random() * input.length);
-    randomized.push(...input.splice(i, 1));
-  }
-
-  return randomized;
-};
+import { random } from './random';
 
 const weightedPick = <T>([item, ...rest]: T[]): T =>
-  rest.length === 0 ? item : Math.random() > 0.5 ? item : weightedPick(rest);
+  rest.length === 0 ? item : random.bool() ? item : weightedPick(rest);
 
 const colors = (() => {
   const src = [
@@ -53,7 +41,7 @@ const colors = (() => {
     chalk.cyanBright,
   ];
 
-  return shuffle(src);
+  return random.shuffle(src);
 })();
 
 export interface IGridOptions {
@@ -88,12 +76,12 @@ export class Grid {
     const roomIds = times(n => repeat(n, avgRoomSize), rooms);
     let remainder = width * height - rooms * avgRoomSize;
     while (remainder > 0) {
-      const r = Math.floor(Math.random() * rooms);
-      roomIds[r].push(r);
+      const id = random.natural({ max: rooms - 1 });
+      roomIds[id].push(id);
       remainder -= 1;
     }
 
-    const pool: number[] = shuffle(flatten(roomIds));
+    const pool: number[] = random.shuffle(flatten(roomIds));
 
     const popSpecific = (n: number): number | undefined => {
       const i = pool.findIndex(equals(n));
