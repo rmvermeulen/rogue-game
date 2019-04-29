@@ -40,6 +40,16 @@ describe.each([
     height: 12,
     rooms: 10,
   },
+  {
+    width: 12,
+    height: 12,
+    rooms: 8,
+  },
+  {
+    width: 12,
+    height: 12,
+    rooms: 4,
+  },
 ])('grid from %o', ({ width, height, rooms }: IGridOptions) => {
   let grid: Grid;
 
