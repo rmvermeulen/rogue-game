@@ -22,6 +22,11 @@
       "member-variable-declaration"
     ],
     "insecure-random": false,
-    "completed-docs": false
+    "completed-docs": false,
+    "no-unnecessary-bind": false,
+    "no-reserved-keywords": false,
+    "no-function-constructor-with-string-args": false,
+    "no-increment-decrement": false,
+    "increment-decrement": true
   }
 }
