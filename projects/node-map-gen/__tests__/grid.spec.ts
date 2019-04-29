@@ -131,19 +131,4 @@ describe.each([
       )(mapLines),
     ).toHaveLength(1);
   });
-
-  it('does not have isolated cells', () => {
-    const { cells } = grid;
-    for (const cell of cells) {
-      const neighborRooms: number[] = pipe(
-        filter(
-          ({ x, y }: ICell) =>
-            Math.abs(cell.x - x) + Math.abs(cell.y - y) === 1,
-        ),
-        (pluck as any)('room'),
-        uniq,
-      )(cells);
-      expect(neighborRooms).toContain(cell.room);
-    }
-  });
 });
