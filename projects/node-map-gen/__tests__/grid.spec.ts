@@ -47,7 +47,7 @@ describe.each([
   let grid: Grid;
 
   beforeAll(() => {
-    grid = Grid.create({ width, height, rooms });
+    grid = Grid.CREATE({ width, height, rooms });
   });
 
   it('is a grid', () => {

@@ -4,6 +4,7 @@ import {
   allPass,
   equals,
   filter,
+  find,
   flatten,
   lte,
   map,
@@ -15,14 +16,17 @@ import {
   tap,
   times,
   trim,
+  unary,
   uniq,
+  when,
   where,
   whereEq,
 } from 'ramda';
 
-const shuffle = ([...input]) => {
-  const randomized = [];
-  while (input.length) {
+// tslint:disable-next-line: no-any
+const shuffle = <T extends any[]>([...input]: T): T => {
+  const randomized = [] as T;
+  while (input.length > 0) {
     const i = Math.floor(Math.random() * input.length);
     randomized.push(...input.splice(i, 1));
   }
@@ -30,9 +34,8 @@ const shuffle = ([...input]) => {
   return randomized;
 };
 
-// weighted pick
-const wt = <T>([item, ...rest]: T[]): T =>
-  rest.length === 0 ? item : Math.random() > 0.5 ? item : wt(rest);
+const weightedPick = <T>([item, ...rest]: T[]): T =>
+  rest.length === 0 ? item : Math.random() > 0.5 ? item : weightedPick(rest);
 
 const colors = (() => {
   const src = [
@@ -72,10 +75,10 @@ export interface IRoom {
   cells: ICell['id'][];
 }
 
+// represents a grid of cells
 export class Grid {
   public readonly width: number;
   public readonly height: number;
-
   public readonly cells: ICell[];
   private constructor({ width, height, rooms }: IGridOptions) {
     this.width = width;
@@ -84,10 +87,10 @@ export class Grid {
     const avgRoomSize = Math.max(0, Math.floor((width * height) / rooms) - 1);
     const roomIds = times(n => repeat(n, avgRoomSize), rooms);
     let remainder = width * height - rooms * avgRoomSize;
-    while (remainder) {
+    while (remainder > 0) {
       const r = Math.floor(Math.random() * rooms);
       roomIds[r].push(r);
-      --remainder;
+      remainder -= 1;
     }
 
     const pool: number[] = shuffle(flatten(roomIds));
@@ -109,16 +112,19 @@ export class Grid {
         y: Math.floor(id / width),
         room: -1,
       })),
-      tap(cells => {
-        cells.forEach(cell => {
-          const trySame = wt([true, true, false]);
+      tap((cells: ICell[]) => {
+        cells.forEach((cell: ICell) => {
+          const trySame = weightedPick([true, true, false]);
           let room: number;
           if (trySame) {
+            // has valid room, which still has entries
             const neighbors = cells
-              // has valid room, which still has entries
               .filter(
                 where({
-                  room: allPass([lte(0), r => pool.includes(r)]),
+                  room: allPass([
+                    lte(0),
+                    (r: ICell['room']) => pool.includes(r),
+                  ]),
                 }),
               )
               // manhattan distance
@@ -143,22 +149,28 @@ export class Grid {
       }),
     )(range(0, width * height));
   }
-  public static create(options: IGridOptions) {
+  public static CREATE(options: IGridOptions) {
     return new Grid(options);
   }
 
-  public cellAt(x: number, y: number): ICell | undefined {
-    return this.cells.find(whereEq({ x, y }));
+  public cellAt(x: number, y: number): undefined | ICell {
+    // tslint:disable-next-line: no-any no-unsafe-any
+    return this.cells.find((whereEq as any)({ x, y }));
   }
 
+  // find all cells belonging to the given row
   public row(y: number): ICell[] {
-    return this.cells.filter(whereEq({ y }));
+    // tslint:disable-next-line: no-any no-unsafe-any
+    return this.cells.filter((whereEq as any)({ y }));
   }
 
+  // find all cells belonging to the given column
   public column(x: number): ICell[] {
-    return this.cells.filter(whereEq({ x }));
+    // tslint:disable-next-line: no-any no-unsafe-any
+    return this.cells.filter((whereEq as any)({ x }));
   }
 
+  // list the unique room-ids in the grid
   public listRooms(): number[] {
     return pipe<ICell[], number[], number[], number[]>(
       pluck('room'),
@@ -167,10 +179,11 @@ export class Grid {
     )(this.cells);
   }
 
+  // get information on a specific room
   public findRoomById(id: IRoom['id']): IRoom | undefined {
     const cells = this.cells.filter(propEq('room', id));
 
-    return cells.length
+    return cells.length > 0
       ? {
           id,
           size: cells.length,
@@ -179,7 +192,7 @@ export class Grid {
       : undefined;
   }
 
-  /** @function display
+  /** render the grid into a string
    * example output:
    * +---+---+---+---+---+
    * | 1   1 | 2   2 | 0 |
@@ -200,20 +213,22 @@ export class Grid {
   public display(): string {
     const header = `+${repeat('---+', this.width).join('')}`;
     const lines = [header];
-    for (let y = 0; y < this.height; ++y) {
+    for (let y = 0; y < this.height; y += 1) {
       let line = '| ';
-      let sep = '';
-      for (let x = 0; x < this.width; ++x) {
+      let separatorLine = '';
+      for (let x = 0; x < this.width; x += 1) {
         const cell = this.cellAt(x, y);
         const east = this.cellAt(x + 1, y);
         const south = this.cellAt(x, y + 1);
 
-        const roomStr = colors[cell.room % colors.length](String(cell.room));
+        const colorize = colors[cell.room % colors.length];
+        const roomStr = colorize(String(cell.room));
 
-        line += `${roomStr} ${east && east.room === cell.room ? '  ' : '| '}`;
-        sep += south && south.room === cell.room ? '+   ' : '+---';
+        const isSameRoom = when(Boolean, propEq('room', cell.room));
+        line += `${roomStr} ${isSameRoom(east) ? '  ' : '| '}`;
+        separatorLine += isSameRoom(south) ? '+   ' : '+---';
       }
-      lines.push(line, sep + '+');
+      lines.push(line, `${separatorLine}+`);
     }
 
     const rooms = this.listRooms()
@@ -221,7 +236,7 @@ export class Grid {
       .map(id => this.findRoomById(id))
       .filter(Boolean);
 
-    if (rooms.length) {
+    if (rooms.length > 0) {
       lines.push('');
       lines.push(
         ...rooms.map(
