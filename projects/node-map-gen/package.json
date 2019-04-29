@@ -8,8 +8,8 @@
     "build": "tsc -p tsconfig.release.json",
     "build:watch": "tsc -w -p tsconfig.release.json",
     "clean": "rimraf coverage build tmp",
-    "lint": "tslint -t stylish --project \"tsconfig.json\"",
-    "lint:test": "yarn lint -c tslint.test.json",
+    "lint": "tslint -t stylish -p tsconfig.json",
+    "lint:test": "tslint -t stylish -p tsconfig.test.json -c tslint.test.json",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch"
