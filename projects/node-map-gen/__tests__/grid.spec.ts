@@ -43,7 +43,7 @@ describe.each([
     height: 12,
     rooms: 10,
   },
-])('grid class', ({ width, height, rooms }: IGridOptions) => {
+])('grid from %o', ({ width, height, rooms }: IGridOptions) => {
   let grid: Grid;
 
   beforeAll(() => {
