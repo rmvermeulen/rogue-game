@@ -1,10 +1,15 @@
 #! /usr/bin/env ts-node
-import * as Chance from 'chance';
+import { Chance } from 'chance';
 import { Grid } from '../src/grid';
 import { generate } from '../src/utils';
 
+const args = process.argv.slice(2);
+// tslint:disable-next-line: strict-boolean-expressions
+const count = parseInt(args[0], 10) || 20;
+
 const random = new Chance();
-generate(20, () => {
+
+generate(count, () => {
   const input = {
     width: random.natural({ min: 3, max: 16 }),
     height: random.natural({ min: 3, max: 16 }),
