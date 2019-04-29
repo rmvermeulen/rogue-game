@@ -1,3 +1,4 @@
+import * as sort from 'alphanum-sort';
 import chalk from 'chalk';
 import * as os from 'os';
 import {
@@ -174,8 +175,7 @@ export class Grid {
       lines.push(line, `${separatorLine}+`);
     }
 
-    const rooms = this.listRooms()
-      .sort()
+    const rooms = sort(this.listRooms())
       .map(id => this.findRoomById(id))
       .filter(Boolean);
 
