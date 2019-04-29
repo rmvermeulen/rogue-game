@@ -3,13 +3,12 @@ jest.mock('../src/random');
 import {
   contains,
   filter,
-  flip,
   pipe,
   pluck,
   propEq,
   splitWhen,
-  times,
   uniq,
+  zip,
 } from 'ramda';
 import stripAnsi from 'strip-ansi';
 import { Grid, ICell, IGridOptions, IRoom } from '../src/grid';
@@ -50,8 +49,19 @@ describe.each([
 
   it('is a grid', () => {
     expect(grid).toBeDefined();
+    expect(grid).toBeInstanceOf(Grid);
     expect(grid).toMatchObject({ width, height });
     expect(grid.cells).toHaveLength(width * height);
+  });
+
+  it('can be cloned', () => {
+    const clone = grid.clone();
+    expect(clone).toBeInstanceOf(Grid);
+    expect(clone).not.toBe(grid);
+    zip(grid.cells, clone.cells).forEach(([original, cloned]) => {
+      expect(original).not.toBe(cloned);
+      expect(original).toStrictEqual(cloned);
+    });
   });
 
   it('can find rows', () => {
