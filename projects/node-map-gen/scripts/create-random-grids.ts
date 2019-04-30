@@ -13,7 +13,7 @@ generate(count, () => {
   const input = {
     width: random.natural({ min: 3, max: 16 }),
     height: random.natural({ min: 3, max: 16 }),
-    rooms: random.natural({ min: 2, max: 9 }),
+    rooms: random.natural({ min: 10, max: 12 }),
   };
   console.log(JSON.stringify(input, undefined, 2));
   console.log(Grid.CREATE(input).display());
