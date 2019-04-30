@@ -66,14 +66,16 @@ export const renderSimple = (grid: Grid, useColors: boolean = true): string => {
     grid
       .row(rowIndex)
       .map((cell: ICell, index) => {
-        let str = cell.room.toString();
+        let roomIdStr = cell.room.toString();
+        const roomIdStrCharLength = roomIdStr.length;
         if (useColors) {
           const colorize = colors[cell.room % colors.length];
-          str = colorize(str);
+          roomIdStr = colorize(roomIdStr);
         }
         const width = columnWidths[index];
 
-        return str.padStart(width);
+        // cannot use String.padEnd because of color in text
+        return ' '.repeat(width - roomIdStrCharLength) + roomIdStr;
       })
       .join(' '),
   ).join(os.EOL);
@@ -172,7 +174,7 @@ export const render = (grid: Grid, useColors: boolean = true): string => {
               pipe(
                 mapIndexed(
                   (
-                    [roomIdStr, roomIdStrLength, maybeWall]: [
+                    [roomIdStr, roomIdStrCharLength, maybeWall]: [
                       string,
                       number,
                       '|' | ' '
@@ -182,7 +184,7 @@ export const render = (grid: Grid, useColors: boolean = true): string => {
                     const width = defaultTo1(columnNumberWidth[column]);
                     // cannot use String.padEnd because of color in text
                     const paddedId =
-                      roomIdStr + ' '.repeat(width - roomIdStrLength);
+                      roomIdStr + ' '.repeat(width - roomIdStrCharLength);
 
                     return `${paddedId} ${maybeWall} `;
                   },

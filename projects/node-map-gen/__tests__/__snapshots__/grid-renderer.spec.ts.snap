@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Grid renderer fancy render 1`] = `
+"+----+----+----+----+----+
+| [31m2[39m    [31m2[39m  | [43m9[49m    [43m9[49m  | [42m14[49m |
++    +----+----+----     |
+| [31m2[39m  | [103m0[49m    [103m0[49m    [103m0[49m  | [42m14[49m |
++----+----+----+----     |
+| [104m15[49m   [104m15[49m   [104m15[49m | [42m14[49m   [42m14[49m |
++----+----+----+----+----+
+| [46m13[49m | [35m8[39m  | [94m5[39m    [94m5[39m  | [32m11[39m |
++----+----+----+----+----+
+| [106m10[49m   [106m10[49m | [32m11[39m | [33m3[39m  | [93m7[39m  |
++----+----+----+----+----+
+
+room 0 size=3 cells=6,7,8
+room 2 size=3 cells=0,1,5
+room 3 size=1 cells=23
+room 5 size=2 cells=17,18
+room 7 size=1 cells=24
+room 8 size=1 cells=16
+room 9 size=2 cells=2,3
+room 10 size=2 cells=20,21
+room 11 size=2 cells=19,22
+room 13 size=1 cells=15
+room 14 size=4 cells=4,9,13,14
+room 15 size=3 cells=10,11,12"
+`;
+
+exports[`Grid renderer fancy render 2`] = `
+"+----+----+----+----+----+
+| 2    2  | 9    9  | 14 |
++    +----+----+----     |
+| 2  | 0    0    0  | 14 |
++----+----+----+----     |
+| 15   15   15 | 14   14 |
++----+----+----+----+----+
+| 13 | 8  | 5    5  | 11 |
++----+----+----+----+----+
+| 10   10 | 11 | 3  | 7  |
++----+----+----+----+----+
+
+room 0 size=3 cells=6,7,8
+room 2 size=3 cells=0,1,5
+room 3 size=1 cells=23
+room 5 size=2 cells=17,18
+room 7 size=1 cells=24
+room 8 size=1 cells=16
+room 9 size=2 cells=2,3
+room 10 size=2 cells=20,21
+room 11 size=2 cells=19,22
+room 13 size=1 cells=15
+room 14 size=4 cells=4,9,13,14
+room 15 size=3 cells=10,11,12"
+`;
+
+exports[`Grid renderer simple render 1`] = `
+" [96m2[39m  [96m2[39m  [91m9[39m  [91m9[39m [103m14[49m
+ [96m2[39m  [93m0[39m  [93m0[39m  [93m0[39m [103m14[49m
+[45m15[49m [45m15[49m [45m15[49m [103m14[49m [103m14[49m
+[102m13[49m  [41m8[49m  [105m5[49m  [105m5[49m [32m11[39m
+[43m10[49m [43m10[49m [32m11[39m  [106m3[49m  [44m7[49m"
+`;
+
+exports[`Grid renderer simple render 2`] = `
+" 2  2  9  9 14
+ 2  0  0  0 14
+15 15 15 14 14
+13  8  5  5 11
+10 10 11  3  7"
+`;

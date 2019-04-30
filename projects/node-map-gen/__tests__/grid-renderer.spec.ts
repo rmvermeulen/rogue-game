@@ -1,45 +1,61 @@
 jest.doMock('../src/random.ts');
 
 import * as os from 'os';
-
-import { compose, length, map, split, uniq } from 'ramda';
+import {
+  compose,
+  length,
+  map,
+  split,
+  splitWhen,
+  uniq,
+  uniqBy,
+  whereEq,
+} from 'ramda';
+// tslint:disable-next-line: no-implicit-dependencies
+import * as stripAnsi from 'strip-ansi';
 import { Grid } from '../src/grid';
-import { renderSimple } from '../src/grid-renderer';
+import { render, renderSimple } from '../src/grid-renderer';
 
-describe('Grid renderer', () => {
-  let grid;
-  beforeAll(() => {
-    grid = Grid.CREATE({
-      width: 10,
-      height: 10,
-      rooms: 20,
+describe.each([[5, 5, 16], [10, 5, 16], [5, 10, 16], [10, 10, 16]].slice(0, 1))(
+  'Grid renderer',
+  (width, height, rooms) => {
+    let grid;
+    beforeAll(() => {
+      grid = Grid.CREATE({
+        width,
+        height,
+        rooms,
+      });
     });
-  });
 
-  describe('simple render', () => {
-    test('it renders', () => {
+    test('simple render', () => {
       const display = renderSimple(grid);
       expect(display).toBeString();
-      expect(display).toMatchInlineSnapshot(`
-        "10 10 10 10 10  1  1  8  8  8
-        16 16 16  7  7  1 13  9  8  1
-        16 16 15  7  7  7 13  9  9  9
-        11 11 15 15 15 17 13  9  4  4
-        12 11 11 11 11 17 13 13  4  4
-        12 12 12 13 19 17 17 17  4  6
-         3  3  3  3 19 19  3  3 19  6
-         2  2  2  2 19 19  2  0  0  6
-        18 18 18 18 18 18 14  0  0  6
-         6  5  5  5  5  0 14 14 14 14"
-      `);
+      expect(display).toMatchSnapshot();
+      expect(stripAnsi(display)).toMatchSnapshot();
       // all lines have the same length
       expect(
         compose(
-          uniq,
-          map(length),
+          uniqBy(length),
           split(os.EOL),
+          stripAnsi,
         )(display),
       ).toHaveLength(1);
     });
-  });
-});
+
+    test('fancy render', () => {
+      const display = render(grid);
+      expect(display).toBeString();
+      expect(display).toMatchSnapshot();
+      expect(stripAnsi(display)).toMatchSnapshot();
+
+      // all map-lines have the same length
+      const [mapLines, [, roomLines]] = compose(
+        splitWhen(whereEq({ length: 0 })),
+        split(os.EOL),
+        stripAnsi,
+      )(display);
+      expect(uniqBy(length, mapLines)).toHaveLength(1);
+    });
+  },
+);

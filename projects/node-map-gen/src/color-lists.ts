@@ -8,6 +8,12 @@ const colors = [
   chalk.yellow,
   chalk.magenta,
   chalk.cyan,
+  chalk.bgRed,
+  chalk.bgGreen,
+  chalk.bgBlue,
+  chalk.bgYellow,
+  chalk.bgMagenta,
+  chalk.bgCyan,
 ];
 
 export const someColorsLength = colors.length;
@@ -21,6 +27,12 @@ const brights = [
   chalk.yellowBright,
   chalk.magentaBright,
   chalk.cyanBright,
+  chalk.bgRedBright,
+  chalk.bgGreenBright,
+  chalk.bgBlueBright,
+  chalk.bgYellowBright,
+  chalk.bgMagentaBright,
+  chalk.bgCyanBright,
 ];
 
 export const manyColorsLength = colors.length + brights.length;
