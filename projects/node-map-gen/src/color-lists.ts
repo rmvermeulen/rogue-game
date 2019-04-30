@@ -8,12 +8,12 @@ const colors = [
   chalk.yellow,
   chalk.magenta,
   chalk.cyan,
-  chalk.bgRed,
-  chalk.bgGreen,
-  chalk.bgBlue,
-  chalk.bgYellow,
-  chalk.bgMagenta,
-  chalk.bgCyan,
+  chalk.bgRed.black,
+  chalk.bgGreen.black,
+  chalk.bgBlue.black,
+  chalk.bgYellow.black,
+  chalk.bgMagenta.black,
+  chalk.bgCyan.black,
 ];
 
 export const someColorsLength = colors.length;
@@ -27,12 +27,12 @@ const brights = [
   chalk.yellowBright,
   chalk.magentaBright,
   chalk.cyanBright,
-  chalk.bgRedBright,
-  chalk.bgGreenBright,
-  chalk.bgBlueBright,
-  chalk.bgYellowBright,
-  chalk.bgMagentaBright,
-  chalk.bgCyanBright,
+  chalk.bgRedBright.black,
+  chalk.bgGreenBright.black,
+  chalk.bgBlueBright.black,
+  chalk.bgYellowBright.black,
+  chalk.bgMagentaBright.black,
+  chalk.bgCyanBright.black,
 ];
 
 export const manyColorsLength = colors.length + brights.length;
