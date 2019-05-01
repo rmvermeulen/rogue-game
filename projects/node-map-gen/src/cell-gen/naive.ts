@@ -27,6 +27,7 @@ export const genCellsNaive = ({ width, height, rooms }: INaiveOptions) => {
   assert.equal(width, natural(width), 'width must be an integer > 0');
   assert.equal(height, natural(height), 'height must be a positive integer');
   assert.equal(rooms, natural(rooms), 'rooms must be a positive integer');
+  assert.isAtMost(rooms, width * height, 'Too many rooms');
 
   const avgRoomSize = Math.max(0, Math.floor((width * height) / rooms) - 1);
   const roomIds = generate(rooms, n => repeat(n, avgRoomSize));
