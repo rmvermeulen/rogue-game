@@ -3,7 +3,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['jest-extended', 'expect-more-jest'],
   verbose: true,
-  collectCoverage: true,
+  collectCoverage: false,
   coveragePathIgnorePatterns: ['.json'],
   globals: {
     'ts-jest': {
