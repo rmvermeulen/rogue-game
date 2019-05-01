@@ -4765,6 +4765,11 @@ util.promisify@^1.0.0:
     define-properties "^1.1.2"
     object.getownpropertydescriptors "^2.0.3"
 
+utility-types@^3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/utility-types/-/utility-types-3.6.1.tgz#14d0621888c906592d7544414b3762b33a657568"
+  integrity sha512-3MiRraWYaLnIjEbWHQEhuMlPIyjSVPZBlfvulm8xGMSs5nQrP0RiCCGJGvNCi2on8w8B7skRTNJUAGK+8PlbrQ==
+
 uuid@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
