@@ -1,9 +1,8 @@
 import { assert } from 'chai';
 import {
   allPass,
+  ascend,
   clone,
-  compose,
-  curryN,
   equals,
   filter,
   flatten,
@@ -11,16 +10,18 @@ import {
   map,
   pipe,
   pluck,
+  prop,
   propEq,
   range,
   repeat,
+  sortWith,
   tap,
   times,
   uniq,
   where,
-  whereEq,
 } from 'ramda';
 import { random } from './random';
+import { generate, natural } from './utils';
 
 export interface IGridOptions extends Partial<Grid> {
   width: number;
@@ -42,24 +43,23 @@ export interface IRoom {
   cells: ICell['id'][];
 }
 
-const natural = compose(
-  curryN(2, Math.max)(1),
-  Math.floor,
-  Math.abs,
-);
-
 // represents a grid of cells
 export class Grid {
+  public static SORT: (cells: ICell[]) => ICell[] = sortWith([
+    ascend(prop('y')),
+    ascend(prop('x')),
+  ]);
   public readonly width: number;
   public readonly height: number;
   public readonly cells: ICell[];
   private readonly rooms: number;
+  private cachedRoomList: number[] | undefined;
   private constructor(options: IGridOptions) {
     const { width, height, rooms, cells } = options;
-    const isClone = options instanceof Grid;
     this.width = width;
     this.height = height;
     this.rooms = rooms;
+    const isClone = options instanceof Grid;
     if (isClone) {
       assert.isNotEmpty(cells, 'Invalid Grid.CLONE: incomplete source');
       this.cells = clone(cells);
@@ -67,6 +67,7 @@ export class Grid {
       this.cells = this.generateCells();
     }
   }
+
   public static CREATE(options: IGridOptions) {
     return new Grid({ ...options });
   }
@@ -80,29 +81,40 @@ export class Grid {
   }
 
   public cellAt(x: number, y: number): undefined | ICell {
-    // tslint:disable-next-line: no-any no-unsafe-any
-    return this.cells.find((whereEq as any)({ x, y }));
+    return this.cells[x + y * this.width];
   }
 
   // find all cells belonging to the given row
   public row(y: number): ICell[] {
-    // tslint:disable-next-line: no-any no-unsafe-any
-    return this.cells.filter((whereEq as any)({ y }));
+    if (y < 0 || y >= this.height) {
+      return [];
+    }
+    const rowStart = y * this.width;
+    const rowEnd = rowStart + this.width;
+
+    return this.cells.slice(rowStart, rowEnd);
   }
 
   // find all cells belonging to the given column
   public column(x: number): ICell[] {
-    // tslint:disable-next-line: no-any no-unsafe-any
-    return this.cells.filter((whereEq as any)({ x }));
+    if (x < 0 || x >= this.width) {
+      return [];
+    }
+
+    return generate(this.height, y => this.cellAt(x, y));
   }
 
   // list the unique room-ids in the grid
   public listRooms(): number[] {
-    return pipe<ICell[], number[], number[], number[]>(
-      pluck('room'),
-      uniq,
-      filter(lte(0)),
-    )(this.cells);
+    if (this.cachedRoomList === undefined) {
+      this.cachedRoomList = pipe<ICell[], number[], number[], number[]>(
+        pluck('room'),
+        uniq,
+        filter(lte(0)),
+      )(this.cells);
+    }
+
+    return [...this.cachedRoomList];
   }
 
   // get information on a specific room

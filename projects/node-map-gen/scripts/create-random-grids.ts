@@ -11,16 +11,13 @@ const args = process.argv.slice(2);
 const count = parseInt(args[0], 10) || 1;
 const random = new Chance();
 
-generate(count, () => {
-  const input = {
+generate(count, () =>
+  compose(
+    render,
+    Grid.CREATE,
+  )({
     width: random.natural({ min: 3, max: 16 }),
     height: random.natural({ min: 3, max: 16 }),
     rooms: random.natural({ min: 10, max: 12 }),
-  };
-  console.log(JSON.stringify(input, undefined, 2));
-  compose(
-    console.log,
-    render,
-    Grid.CREATE,
-  )(input);
-});
+  }),
+);
