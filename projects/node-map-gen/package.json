@@ -7,6 +7,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.release.json",
     "build:watch": "tsc -w -p tsconfig.release.json",
+    "check-deps": "depcheck --skip-missing --ignore-bin-package --ignores *-jest,jest-*,prettier-*,tslint-*,@types/*",
     "clean": "rimraf coverage build tmp",
     "lint": "tslint -t stylish -p tsconfig.json",
     "lint:test": "tslint -t stylish -p tsconfig.test.json -c tslint.test.json",
@@ -15,7 +16,6 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "alphanum-sort": "^1.0.2",
     "chai": "^4.2.0",
     "chalk": "^2.4.2",
     "chance": "^1.0.18",
@@ -29,6 +29,7 @@
     "@types/node": "^11.13.8",
     "@types/ramda": "types/npm-ramda#dist",
     "@types/strip-ansi": "^5.2.1",
+    "depcheck": "^0.7.2",
     "expect-more-jest": "^2.4.1",
     "husky": "^2.1.0",
     "jest": "^24.7.1",
@@ -46,7 +47,6 @@
     "tslint": "^5.16.0",
     "tslint-config-prettier": "1.18.0",
     "tslint-microsoft-contrib": "~6.1.1",
-    "tsutils": "~3.10.0",
     "typescript": "^3.4.5"
   },
   "engines": {

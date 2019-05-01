@@ -1,6 +1,9 @@
+import { assert } from 'chai';
 import {
   allPass,
   clone,
+  compose,
+  curryN,
   equals,
   filter,
   flatten,
@@ -39,6 +42,12 @@ export interface IRoom {
   cells: ICell['id'][];
 }
 
+const natural = compose(
+  curryN(2, Math.max)(1),
+  Math.floor,
+  Math.abs,
+);
+
 // represents a grid of cells
 export class Grid {
   public readonly width: number;
@@ -48,15 +57,15 @@ export class Grid {
   private constructor(options: IGridOptions) {
     const { width, height, rooms, cells } = options;
     const isClone = options instanceof Grid;
-    console.assert(
-      isClone === Boolean(cells),
-      'Invalid Grid.CLONE: incomplete source',
-    );
-
     this.width = width;
     this.height = height;
     this.rooms = rooms;
-    this.cells = isClone ? clone(cells) : this.generateCells();
+    if (isClone) {
+      assert.isNotEmpty(cells, 'Invalid Grid.CLONE: incomplete source');
+      this.cells = clone(cells);
+    } else {
+      this.cells = this.generateCells();
+    }
   }
   public static CREATE(options: IGridOptions) {
     return new Grid({ ...options });
@@ -111,6 +120,10 @@ export class Grid {
 
   private generateCells() {
     const { width, height, rooms } = this;
+    assert.equal(width, natural(width), 'width must be an integer > 0');
+    assert.equal(height, natural(height), 'height must be a positive integer');
+    assert.equal(rooms, natural(rooms), 'rooms must be a positive integer');
+
     const avgRoomSize = Math.max(0, Math.floor((width * height) / rooms) - 1);
     const roomIds = times(n => repeat(n, avgRoomSize), rooms);
     let remainder = width * height - rooms * avgRoomSize;
