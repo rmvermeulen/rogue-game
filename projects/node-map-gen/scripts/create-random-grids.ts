@@ -13,11 +13,12 @@ const random = new Chance();
 
 generate(count, () =>
   compose(
+    console.log,
     render,
     Grid.CREATE,
   )({
     width: random.natural({ min: 3, max: 16 }),
     height: random.natural({ min: 3, max: 16 }),
-    rooms: random.natural({ min: 10, max: 12 }),
+    roomCount: random.natural({ min: 10, max: 12 }),
   }),
 );

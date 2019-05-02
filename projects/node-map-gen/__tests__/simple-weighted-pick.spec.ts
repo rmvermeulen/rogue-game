@@ -1,4 +1,4 @@
-jest.doMock('../src/random.ts');
+jest.doMock('../src/random');
 
 import { compose, groupBy, identity, length, map, tap } from 'ramda';
 import { generate, weightedPick } from '../src/utils';

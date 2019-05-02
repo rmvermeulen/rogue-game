@@ -1,33 +1,23 @@
 import { assert } from 'chai';
 import {
-  allPass,
   ascend,
   clone,
-  equals,
+  compose,
   filter,
-  flatten,
   lte,
-  map,
-  pipe,
   pluck,
   prop,
   propEq,
-  range,
-  repeat,
   sortWith,
-  tap,
-  times,
   uniq,
-  where,
 } from 'ramda';
-import { genCellsNaive } from './cell-gen/naive';
-import { random } from './random';
-import { generate, natural } from './utils';
+import { generateCells } from './generators/naive';
+import { generate } from './utils';
 
 export interface IGridOptions extends Partial<Grid> {
   width: number;
   height: number;
-  rooms: number;
+  roomCount: number;
   cells?: ICell[];
 }
 
@@ -35,13 +25,13 @@ export interface ICell {
   id: number;
   x: number;
   y: number;
-  room: number;
+  roomId: number;
 }
 
 export interface IRoom {
   id: number;
   size: number;
-  cells: ICell['id'][];
+  cells: Array<ICell['id']>;
 }
 
 // represents a grid of cells
@@ -53,13 +43,13 @@ export class Grid {
   public readonly width: number;
   public readonly height: number;
   public readonly cells: ICell[];
-  private readonly rooms: number;
+  public readonly roomCount: number;
   private cachedRoomList: number[] | undefined;
   private constructor(options: IGridOptions) {
-    const { width, height, rooms, cells } = options;
+    const { width, height, roomCount, cells } = options;
     this.width = width;
     this.height = height;
-    this.rooms = rooms;
+    this.roomCount = roomCount;
     const isClone = options instanceof Grid;
     if (isClone) {
       assert.isNotEmpty(cells, 'Invalid Grid.CLONE: incomplete source');
@@ -108,10 +98,10 @@ export class Grid {
   // list the unique room-ids in the grid
   public listRooms(): number[] {
     if (this.cachedRoomList === undefined) {
-      this.cachedRoomList = pipe<ICell[], number[], number[], number[]>(
-        pluck('room'),
+      this.cachedRoomList = compose<ICell[], number[], number[], number[]>(
         uniq,
         filter(lte(0)),
+        pluck('roomId'),
       )(this.cells);
     }
 
@@ -120,7 +110,7 @@ export class Grid {
 
   // get information on a specific room
   public findRoomById(id: IRoom['id']): IRoom | undefined {
-    const cells = this.cells.filter(propEq('room', id));
+    const cells = this.cells.filter(propEq('roomId', id));
 
     return cells.length > 0
       ? {
@@ -132,6 +122,6 @@ export class Grid {
   }
 
   private generateCells() {
-    return genCellsNaive(this);
+    return generateCells(this);
   }
 }

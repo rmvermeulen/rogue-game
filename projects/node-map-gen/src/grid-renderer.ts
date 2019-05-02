@@ -54,7 +54,7 @@ export const renderSimple = (grid: Grid, useColors: boolean = true): string => {
           toString,
         ),
       ),
-      pluck<ICell, 'room'>('room'),
+      pluck<ICell, 'roomId'>('roomId'),
     )(row);
     // update column
     roomStrWidths.forEach((width, column) => {
@@ -66,10 +66,10 @@ export const renderSimple = (grid: Grid, useColors: boolean = true): string => {
     grid
       .row(rowIndex)
       .map((cell: ICell, index) => {
-        let roomIdStr = cell.room.toString();
+        let roomIdStr = cell.roomId.toString();
         const roomIdStrCharLength = roomIdStr.length;
         if (useColors) {
-          const colorize = colors[cell.room % colors.length];
+          const colorize = colors[cell.roomId % colors.length];
           roomIdStr = colorize(roomIdStr);
         }
         const width = columnWidths[index];
@@ -112,7 +112,7 @@ export const render = (grid: Grid, useColors: boolean = true): string => {
     : [];
 
   const header = repeat('-', grid.width);
-  const lineFragments: (string | string[] | string[][])[] = [header];
+  const lineFragments: Array<string | string[] | string[][]> = [header];
   const columnNumberWidth: number[] = generate(grid.width, () => 1);
 
   for (let y = 0; y < grid.height; y += 1) {
@@ -124,16 +124,16 @@ export const render = (grid: Grid, useColors: boolean = true): string => {
       const south = grid.cellAt(x, y + 1);
 
       // update the current column-width to the biggest in the column
-      const roomStr = String(cell.room);
+      const roomStr = String(cell.roomId);
       columnNumberWidth[x] = Math.max(columnNumberWidth[x], roomStr.length);
 
       let str = roomStr;
       if (useColors) {
-        const colorize = colors[cell.room % colors.length];
+        const colorize = colors[cell.roomId % colors.length];
         str = colorize(roomStr);
       }
 
-      const isSameRoom = when(Boolean, propEq('room', cell.room));
+      const isSameRoom = when(Boolean, propEq('room', cell.roomId));
       line.push([
         str,
         (roomStr.length as unknown) as string /*cheat*/,

@@ -21,11 +21,11 @@ describe.each(
 )(
   'Create grid from w:%i h:%i r:%i',
   // tslint:disable-next-line: max-func-body-length
-  (width, height, rooms) => {
+  (width, height, roomCount) => {
     let grid: Grid;
 
     beforeAll(() => {
-      grid = Grid.CREATE({ width, height, rooms });
+      grid = Grid.CREATE({ width, height, roomCount });
     });
     it('is a grid', () => {
       expect(grid).toBeDefined();
@@ -52,11 +52,13 @@ describe.each(
     });
 
     it('can list the unique room ids', () => {
-      expect(grid.listRooms()).toHaveLength(rooms);
+      expect(grid.listRooms()).toHaveLength(roomCount);
     });
 
     it('can find information on rooms', () => {
-      const roomList: IRoom[] = generate(rooms, rid => grid.findRoomById(rid));
+      const roomList: IRoom[] = generate(roomCount, rid =>
+        grid.findRoomById(rid),
+      );
       for (const room of roomList) {
         expect(room).toMatchObject({
           cells: expect.any(Array),

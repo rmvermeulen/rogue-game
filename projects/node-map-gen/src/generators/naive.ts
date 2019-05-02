@@ -23,17 +23,21 @@ export interface INaiveOptions extends IGridOptions {}
  * using a naive algorithm.
  * rooms can be spread into separate chunks as small as 1x1
  */
-export const genCellsNaive = ({ width, height, rooms }: INaiveOptions) => {
+export const generateCells = ({ width, height, roomCount }: INaiveOptions) => {
   assert.equal(width, natural(width), 'width must be an integer > 0');
   assert.equal(height, natural(height), 'height must be a positive integer');
-  assert.equal(rooms, natural(rooms), 'rooms must be a positive integer');
-  assert.isAtMost(rooms, width * height, 'Too many rooms');
+  assert.equal(
+    roomCount,
+    natural(roomCount),
+    'rooms must be a positive integer',
+  );
+  assert.isAtMost(roomCount, width * height, 'Too many rooms');
 
-  const avgRoomSize = Math.max(0, Math.floor((width * height) / rooms) - 1);
-  const roomIds = generate(rooms, n => repeat(n, avgRoomSize));
-  let remainder = width * height - rooms * avgRoomSize;
+  const avgRoomSize = Math.max(0, Math.floor((width * height) / roomCount) - 1);
+  const roomIds = generate(roomCount, n => repeat(n, avgRoomSize));
+  let remainder = width * height - roomCount * avgRoomSize;
   while (remainder > 0) {
-    const id = random.natural({ max: rooms - 1 });
+    const id = random.natural({ max: roomCount - 1 });
     roomIds[id].push(id);
     remainder -= 1;
   }
@@ -55,18 +59,21 @@ export const genCellsNaive = ({ width, height, rooms }: INaiveOptions) => {
       id,
       x: id % width,
       y: Math.floor(id / width),
-      room: -1,
+      roomId: -1,
     })),
     tap((cells: ICell[]) => {
       cells.forEach((cell: ICell) => {
         const trySame = random.weighted([true, false], [15, 1]);
-        let room: number;
+        let roomId: number;
         if (trySame) {
           // has valid room, which still has entries
           const neighbors = cells
             .filter(
               where({
-                room: allPass([lte(0), (r: ICell['room']) => pool.includes(r)]),
+                room: allPass([
+                  lte(0),
+                  (r: ICell['roomId']) => pool.includes(r),
+                ]),
               }),
             )
             // manhattan distance
@@ -75,18 +82,18 @@ export const genCellsNaive = ({ width, height, rooms }: INaiveOptions) => {
                 Math.abs(cell.x - x) + Math.abs(cell.y - y) === 1,
             );
           for (const n of neighbors) {
-            const popped = popSpecific(n.room);
+            const popped = popSpecific(n.roomId);
             if (popped !== undefined) {
-              room = popped;
+              roomId = popped;
               break;
             }
           }
         }
-        if (room === undefined) {
-          room = pool.pop();
+        if (roomId === undefined) {
+          roomId = pool.pop();
         }
         // update cell in-place
-        cell.room = room;
+        cell.roomId = roomId;
       });
     }),
   )(range(0, width * height));
