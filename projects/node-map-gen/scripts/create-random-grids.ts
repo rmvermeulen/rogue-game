@@ -17,8 +17,8 @@ generate(count, () =>
     render,
     Grid.CREATE,
   )({
-    width: random.natural({ min: 3, max: 16 }),
-    height: random.natural({ min: 3, max: 16 }),
-    roomCount: random.natural({ min: 10, max: 12 }),
+    width: random.natural({ min: 4, max: 16 }),
+    height: random.natural({ min: 4, max: 16 }),
+    roomCount: random.natural({ min: 2, max: 15 }),
   }),
 );
