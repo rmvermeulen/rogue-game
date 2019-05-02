@@ -4,6 +4,8 @@ module.exports = {
       (yarn check-deps || true) &&
       lint-staged
       `,
-    'pre-push': 'yarn check-deps && jest --ci',
+    'pre-push': `yarn check-deps &&
+      (yarn lint && tsc --noEmit) &&
+      jest --ci`,
   },
 };
