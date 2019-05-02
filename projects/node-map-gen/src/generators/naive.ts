@@ -1,16 +1,6 @@
 import { assert } from 'chai';
-import {
-  allPass,
-  equals,
-  flatten,
-  lte,
-  map,
-  pipe,
-  range,
-  repeat,
-  tap,
-  where,
-} from 'ramda';
+import { allPass, equals, flatten, flip, gte, repeat, where } from 'ramda';
+import { contained } from 'ramda-adjunct';
 import { ICell, IGridOptions } from '../grid';
 import { random } from '../random';
 import { generate, natural } from '../utils';
@@ -42,59 +32,49 @@ export const generateCells = ({ width, height, roomCount }: INaiveOptions) => {
     remainder -= 1;
   }
 
-  const pool: number[] = random.shuffle(flatten(roomIds));
+  const roomIdPool: number[] = random.shuffle(flatten(roomIds));
 
   const popSpecific = (n: number): number | undefined => {
-    const i = pool.findIndex(equals(n));
+    const i = roomIdPool.findIndex(equals(n));
     if (i === -1) {
       return undefined;
     }
-    const [popped] = pool.splice(i, 1);
+    const [popped] = roomIdPool.splice(i, 1);
 
     return popped;
   };
 
-  return pipe(
-    map((id: number) => ({
-      id,
-      x: id % width,
-      y: Math.floor(id / width),
-      roomId: -1,
-    })),
-    tap((cells: ICell[]) => {
-      cells.forEach((cell: ICell) => {
-        const trySame = random.weighted([true, false], [15, 1]);
-        let roomId: number;
-        if (trySame) {
-          // has valid room, which still has entries
-          const neighbors = cells
-            .filter(
-              where({
-                room: allPass([
-                  lte(0),
-                  (r: ICell['roomId']) => pool.includes(r),
-                ]),
-              }),
-            )
-            // manhattan distance
-            .filter(
-              ({ x, y }: typeof cell) =>
-                Math.abs(cell.x - x) + Math.abs(cell.y - y) === 1,
-            );
-          for (const n of neighbors) {
-            const popped = popSpecific(n.roomId);
-            if (popped !== undefined) {
-              roomId = popped;
-              break;
-            }
-          }
-        }
-        if (roomId === undefined) {
-          roomId = pool.pop();
-        }
-        // update cell in-place
-        cell.roomId = roomId;
-      });
-    }),
-  )(range(0, width * height));
+  const cells = generate(width * height, (id: number) => ({
+    id,
+    x: id % width,
+    y: Math.floor(id / width),
+    roomId: -1,
+  }));
+
+  for (const cell of cells) {
+    type CellData = typeof cell;
+    // cells with valid room property
+    // which is still included in pool
+    const roomId = cells
+      .filter(
+        where({
+          room: allPass([flip(gte)(0), contained(roomIdPool)]),
+        }),
+      )
+      // manhattan distance
+      .filter(
+        ({ x, y }: CellData) =>
+          Math.abs(cell.x - x) + Math.abs(cell.y - y) === 1,
+      )
+      .reduce(
+        (id: number | undefined, neighbor: CellData) =>
+          id === undefined ? popSpecific(neighbor.roomId) : id,
+        undefined,
+      );
+
+    // update cell in-place
+    cell.roomId = roomId !== undefined ? roomId : roomIdPool.pop();
+  }
+
+  return cells;
 };
