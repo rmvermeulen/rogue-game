@@ -1,6 +1,6 @@
 #! /usr/bin/env ts-node
 import { Chance } from 'chance';
-import { compose } from 'ramda';
+import { compose, tap } from 'ramda';
 import { Grid } from '../src/grid';
 import { render } from '../src/grid-renderer';
 import { generate } from '../src/utils';
@@ -16,6 +16,7 @@ generate(count, () =>
     console.log,
     render,
     Grid.CREATE,
+    tap(options => console.log(JSON.stringify(options, undefined, 2))),
   )({
     width: random.natural({ min: 4, max: 16 }),
     height: random.natural({ min: 4, max: 16 }),

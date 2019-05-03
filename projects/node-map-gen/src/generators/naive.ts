@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import { allPass, equals, flatten, flip, gte, repeat, where } from 'ramda';
 import { contained } from 'ramda-adjunct';
-import { ICell, IGridOptions } from '../grid';
+import { IGridOptions } from '../grid';
 import { random } from '../random';
 import { generate, natural } from '../utils';
 
