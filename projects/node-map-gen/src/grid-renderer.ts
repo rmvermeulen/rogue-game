@@ -133,7 +133,10 @@ export const render = (grid: Grid, useColors: boolean = true): string => {
         str = colorize(roomStr);
       }
 
-      const isSameRoom = when(Boolean, propEq('room', cell.roomId));
+      const isSameRoom = when(
+        Boolean,
+        propEq('roomId' as keyof typeof cell, cell.roomId),
+      );
       line.push([
         str,
         (roomStr.length as unknown) as string /*cheat*/,

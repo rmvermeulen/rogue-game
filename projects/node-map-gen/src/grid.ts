@@ -52,11 +52,26 @@ export class Grid {
     this.roomCount = roomCount;
     const isClone = options instanceof Grid;
     if (isClone) {
-      assert.isNotEmpty(cells, 'Invalid Grid.CLONE: incomplete source');
+      assert.lengthOf(
+        cells,
+        width * height,
+        'Invalid Grid.CLONE: incomplete source',
+      );
       this.cells = clone(cells);
     } else {
       this.cells = this.generateCells();
     }
+  }
+
+  public static FROM_CELLS(
+    width: number,
+    height: number,
+    cells: ICell[],
+  ): Grid {
+    const grid = Object.create(Grid.prototype) as Grid;
+    Object.assign(grid, { width, height, cells });
+
+    return grid;
   }
 
   public static CREATE(options: IGridOptions) {
