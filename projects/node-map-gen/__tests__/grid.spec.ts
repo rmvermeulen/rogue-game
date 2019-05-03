@@ -7,18 +7,16 @@ import { contains, filter, pipe, pluck, zip } from 'ramda';
 import { Grid, ICell, IRoom } from '../src/grid';
 import { generate } from '../src/utils';
 
-describe.each(
-  [
-    [5, 5, 2],
-    [5, 5, 12],
-    [5, 5, 3],
-    [5, 5, 4],
-    [4, 7, 6],
-    [12, 12, 10],
-    [12, 12, 8],
-    [12, 12, 4],
-  ].slice(0, 2),
-)(
+describe.each([
+  [5, 5, 2],
+  [5, 5, 12],
+  [5, 5, 3],
+  [5, 5, 4],
+  [4, 7, 6],
+  [12, 12, 10],
+  [12, 12, 8],
+  [12, 12, 4],
+])(
   'Create grid from w:%i h:%i r:%i',
   // tslint:disable-next-line: max-func-body-length
   (width, height, roomCount) => {
