@@ -2,7 +2,7 @@ jest.doMock('../src/random');
 
 // tslint:disable-next-line: no-implicit-dependencies no-import-side-effect
 import 'jest-extended';
-import { equals, objOf, range } from 'ramda';
+import { equals, objOf, pluck, range, uniq } from 'ramda';
 import {
   findCandidatesFrom,
   findNeighborsFrom,
@@ -116,32 +116,10 @@ describe('generator utils', () => {
       y,
       neighborCount: 0,
     }));
-    const initialCells = pickInitialRoomCells(cells, 3);
-    expect(initialCells).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "id": 8,
-          "neighborCount": 0,
-          "roomId": 0,
-          "x": 2,
-          "y": 2,
-        },
-        Object {
-          "id": 8,
-          "neighborCount": 0,
-          "roomId": 1,
-          "x": 2,
-          "y": 2,
-        },
-        Object {
-          "id": 2,
-          "neighborCount": 0,
-          "roomId": 2,
-          "x": 2,
-          "y": 0,
-        },
-      ]
-    `);
+    generate(20, () => {
+      const picked = pluck('id', pickInitialRoomCells(cells, 3));
+      expect(picked).toEqual(uniq(picked));
+    });
   });
 
   test('findCandidatesFrom', () => {

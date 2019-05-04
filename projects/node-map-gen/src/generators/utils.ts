@@ -26,9 +26,7 @@ export const withoutBy = curry(
 
 type HasId = Readonly<{ id: number }>;
 
-export const withoutById = withoutBy(
-  (a: HasId, b: HasId) => a.id === b.id,
-) as CurriedFunction2<HasId[], HasId[], HasId[]>;
+export const withoutById = withoutBy((a: HasId, b: HasId) => a.id === b.id);
 
 export const gridFactory = <T>(
   width: number,
@@ -82,12 +80,11 @@ export const pickInitialRoomCells = (cells: ProtoCell[], roomCount: number) => {
   // pick a starting point for each room at random
   // - no overlap
   // - not locked in
+  let pool = cells;
   const roomStartCells: ProtoCell[] = [];
   while (roomStartCells.length < roomCount) {
-    const cell = random.pickone(cells);
-    if (roomStartCells.includes(cell)) {
-      continue;
-    }
+    const cell = random.pickone(pool);
+    pool = withoutById([cell], pool);
 
     // cells outside the grid don't matter
     const neighborhood = cells.filter(isNeighborOf(cell));
@@ -112,3 +109,4 @@ export const pickInitialRoomCells = (cells: ProtoCell[], roomCount: number) => {
 
   return roomStartCells;
 };
+
