@@ -9,6 +9,12 @@
     "mocha-no-side-effect-code": false,
     "no-function-constructor-with-string-args": false,
     "no-increment-decrement": false,
+    "no-object-literal-type-assertion": [
+      true,
+      {
+        "allow-arguments": true
+      }
+    ],
     "no-parameter-properties": false,
     "no-redundant-jsdoc": false,
     "no-relative-imports": false,
