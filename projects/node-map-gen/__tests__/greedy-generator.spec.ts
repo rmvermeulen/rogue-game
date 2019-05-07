@@ -1,4 +1,6 @@
-import { compose, contains, filter, pluck, uniq } from 'ramda';
+import * as os from 'os';
+
+import { compose, contains, filter, pluck, test as testRE, uniq } from 'ramda';
 import { generateCells } from '../src/generators/greedy';
 import { Grid, ICell } from '../src/grid';
 import { render } from '../src/grid-renderer';
@@ -14,6 +16,7 @@ describe.each`
   ({ width, height, roomCount }: { [key: string]: number }) => {
     jest.setTimeout(3e3);
     let cells: ICell[];
+    let grid: Grid;
     let display: string;
     beforeAll(() => {
       cells = generateCells({
@@ -21,8 +24,10 @@ describe.each`
         height,
         roomCount,
       });
-      const grid = Grid.FROM_CELLS(width, height, cells);
+      grid = Grid.FROM_CELLS(width, height, cells);
       display = render(grid, true);
+      // tslint:disable-next-line: no-console
+      console.log(display);
     });
 
     test('is probably a grid', () => {
@@ -38,10 +43,38 @@ describe.each`
       expect(uniqueRoomIds).toHaveLength(roomCount);
     });
 
-    it.todo('does not have rooms split over separate chunks');
+    it('does not have rooms split over separate chunks', () => {
+      const roomLines = display.split(os.EOL).filter(testRE(/ size=\d+ /));
+      for (const line of roomLines) {
+        const [, roomId, , cellList] = line.split(/\s/);
+        const cellIds = cellList
+          .split('=')[1]
+          .split(',')
+          .map(Number);
+        const roomCells = cells.filter(({ id }) => cellIds.includes(id));
+        const visitedIds: number[] = [];
+        const toVisit = roomCells.slice(0, 1);
+        while (toVisit.length > 0) {
+          const { x, y, id } = toVisit.shift();
+          if (visitedIds.includes(id)) {
+            continue;
+          }
+          toVisit.push(
+            ...[[x, y - 1], [x, y + 1], [x - 1, y], [x + 1, y]]
+              .map(([nx, ny]) => grid.cellAt(nx, ny))
+              .filter(Boolean)
+              .filter(
+                ({ id: nextId }) =>
+                  cellIds.includes(nextId) && !visitedIds.includes(nextId),
+              ),
+          );
+          visitedIds.push(id);
+        }
+        expect(visitedIds.sort()).toEqual(cellIds.sort());
+      }
+    });
 
     test('does not have unnecessary isolated cells', () => {
-      console.log(display);
       const isolatedCells = cells.reduce((total, cell) => {
         const isPartOfRoom = compose(
           contains(cell.roomId),
