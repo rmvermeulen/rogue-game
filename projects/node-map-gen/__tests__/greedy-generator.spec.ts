@@ -7,6 +7,8 @@ import { render } from '../src/grid-renderer';
 
 describe.each`
   width | height | roomCount
+  ${5}  | ${5}   | ${4}
+  ${5}  | ${5}   | ${10}
   ${10} | ${10}  | ${4}
   ${10} | ${10}  | ${10}
   ${10} | ${10}  | ${35}
