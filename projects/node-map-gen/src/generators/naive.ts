@@ -4,6 +4,7 @@ import { contained } from 'ramda-adjunct';
 import { IGridOptions } from '../grid';
 import { random } from '../random';
 import { generate, natural } from '../utils';
+import { manhattan } from './utils';
 
 // tslint:disable-next-line: no-empty-interface
 export interface INaiveOptions extends IGridOptions {}
@@ -62,10 +63,7 @@ export const generateCells = ({ width, height, roomCount }: INaiveOptions) => {
         }),
       )
       // manhattan distance
-      .filter(
-        ({ x, y }: CellData) =>
-          Math.abs(cell.x - x) + Math.abs(cell.y - y) === 1,
-      )
+      .filter((other: CellData) => manhattan(cell, other) === 1)
       .reduce(
         (id: number | undefined, neighbor: CellData) =>
           id === undefined ? popSpecific(neighbor.roomId) : id,

@@ -62,50 +62,50 @@ describe('generator utils', () => {
         [1, 2.5],
       ].map(([x, y]) => `x=${x} y=${y} -> ${isNeighbor({ x, y })}`),
     ).toMatchInlineSnapshot(`
-                              Array [
-                                "x=0 y=0 -> false",
-                                "x=0 y=1 -> true",
-                                "x=0 y=2 -> false",
-                                "x=1 y=0 -> true",
-                                "x=1 y=2 -> true",
-                                "x=2 y=0 -> false",
-                                "x=2 y=1 -> true",
-                                "x=2 y=2 -> false",
-                                "x=3 y=0 -> false",
-                                "x=3 y=1 -> false",
-                                "x=3 y=2 -> false",
-                                "x=0 y=3 -> false",
-                                "x=1 y=3 -> false",
-                                "x=2 y=3 -> false",
-                                "x=1 y=1 -> false",
-                                "x=1 y=2.5 -> false",
-                              ]
-                    `);
+                                    Array [
+                                      "x=0 y=0 -> false",
+                                      "x=0 y=1 -> true",
+                                      "x=0 y=2 -> false",
+                                      "x=1 y=0 -> true",
+                                      "x=1 y=2 -> true",
+                                      "x=2 y=0 -> false",
+                                      "x=2 y=1 -> true",
+                                      "x=2 y=2 -> false",
+                                      "x=3 y=0 -> false",
+                                      "x=3 y=1 -> false",
+                                      "x=3 y=2 -> false",
+                                      "x=0 y=3 -> false",
+                                      "x=1 y=3 -> false",
+                                      "x=2 y=3 -> false",
+                                      "x=1 y=1 -> false",
+                                      "x=1 y=2.5 -> false",
+                                    ]
+                        `);
   });
 
   test('findNeighborsFrom', () => {
     const source = gridFactory(3, 3, (x, y) => ({ x, y }));
     const findNeighbors = findNeighborsFrom(source);
     expect(findNeighbors({ x: 1, y: 1 })).toMatchInlineSnapshot(`
-                        Array [
-                          Object {
-                            "x": 1,
-                            "y": 0,
-                          },
-                          Object {
-                            "x": 0,
-                            "y": 1,
-                          },
-                          Object {
-                            "x": 2,
-                            "y": 1,
-                          },
-                          Object {
-                            "x": 1,
-                            "y": 2,
-                          },
-                        ]
-                `);
+                              Array [
+                                Object {
+                                  "x": 1,
+                                  "y": 0,
+                                },
+                                Object {
+                                  "x": 0,
+                                  "y": 1,
+                                },
+                                Object {
+                                  "x": 2,
+                                  "y": 1,
+                                },
+                                Object {
+                                  "x": 1,
+                                  "y": 2,
+                                },
+                              ]
+                    `);
   });
 
   test('pickInitialRoomCells', () => {
@@ -126,21 +126,6 @@ describe('generator utils', () => {
     const source = gridFactory(2, 2, (x, y, id) => ({ id, x, y, room: -1 }));
     const findCandidates = findCandidatesFrom(source);
     const candidates = findCandidates([{ id: -1, room: -1, x: 0, y: 0 }]);
-    expect(candidates).toMatchInlineSnapshot(`
-                  Array [
-                    Object {
-                      "id": 1,
-                      "room": -1,
-                      "x": 1,
-                      "y": 0,
-                    },
-                    Object {
-                      "id": 2,
-                      "room": -1,
-                      "x": 0,
-                      "y": 1,
-                    },
-                  ]
-            `);
+    expect(candidates).toMatchInlineSnapshot(`Array []`);
   });
 });
