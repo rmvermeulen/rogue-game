@@ -75,12 +75,12 @@ export const generateCells = (options: IGreedyOptions): ICell[] => {
         break;
       }
       // find cells adjacent to cell in current room
-      // TODO: use pool.take[N/Many] with constraints
+      // NOTE: maybe use pool.take[N/Many] with constraints
       const candidates = findCandidatesFrom(pool.ref())(rooms[i], true);
       if (candidates.length === 0) {
         continue;
       }
-      // TODO: pick best cell
+      // NOTE: pick best cell by number of neighbors?
       const picked = random.pickone(candidates);
       // remove from pool
       pool.remove([picked]);

@@ -81,9 +81,11 @@ export const findCandidatesFrom = (sourceCells: Candidate[]) => (
   excludeCurrent = false,
 ): Candidate[] => {
   return compose(
+    // remove 'roomCells'
     excludeCurrent
       ? (withoutById(roomCells) as (cs: Candidate[]) => Candidate[])
       : identity,
+    // find uniq neighbors of 'roomCells'
     uniqBy(prop('id')),
     filter<Candidate>(whereEq(unsetRoom)),
     chain(findNeighborsFrom(sourceCells)),
