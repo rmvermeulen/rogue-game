@@ -2,24 +2,30 @@ jest.doMock('../src/random');
 
 // tslint:disable no-import-side-effect no-implicit-dependencies
 import 'jest-extended';
+import '../src/strip-ansi.d';
 // tslint:enable no-import-side-effect no-implicit-dependencies
+
 import * as os from 'os';
 import {
+  aperture,
   compose,
   converge,
+  either,
   equals,
+  groupBy,
+  last,
   length,
+  map,
   partition,
+  reject,
   split,
   takeLastWhile,
   takeWhile,
   test as testRE,
 } from 'ramda';
-// tslint:disable-next-line: no-implicit-dependencies
 import * as stripAnsi from 'strip-ansi';
 import { Grid } from '../src/grid';
 import { render } from '../src/grid-renderer';
-import '../src/strip-ansi.d';
 
 const toLines: (str: string) => string[] = split(os.EOL);
 
@@ -54,14 +60,14 @@ describe('Examples', () => {
       2, 2, 2
     ]
     expect(renderCells(3, 3, roomIds)).toMatchInlineSnapshot(`
-      "+---+---+---+
+      "+-----------+
       | 0   0   0 |
-      +---+---+---+
+      +-----------+
       | 1   1   1 |
-      +---+---+---+
+      +-----------+
       | 2   2   2 |
-      +---+---+---+
-      
+      +-----------+
+
       room 0 size=3 cells=0,1,2
       room 1 size=3 cells=3,4,5
       room 2 size=3 cells=6,7,8"
@@ -78,18 +84,18 @@ describe('Examples', () => {
       5, 5, 5, 5, 5,
     ]
     expect(renderCells(5, 5, roomIds)).toMatchInlineSnapshot(`
-      "+---+---+---+---+---+
+      "+---------------+---+
       | 0   0   0   0 | 2 |
-      +---+---+---+---    |
+      +-----------+---+   |
       | 1   1   1 | 2   2 |
-      +---+---+---+---+---+
+      +-------+---+---+---+
       | 4   4 | 5   5 | 3 |
-      +           +---    |
+      |       |   +---+   |
       | 4   4 | 5 | 3   3 |
-      +---+---    +---+---+
+      +-------+   +-------+
       | 5   5   5   5   5 |
-      +---+---+---+---+---+
-      
+      +-------------------+
+
       room 0 size=4 cells=0,1,2,3
       room 1 size=3 cells=5,6,7
       room 2 size=3 cells=4,8,9
@@ -122,6 +128,8 @@ describe.each([
 
   test('render', () => {
     const display = render(grid);
+    const plainDisplay = stripAnsi(display);
+    expect(plainDisplay).toMatchSnapshot();
     expect(display).toMatchSnapshot();
 
     // display format
@@ -133,7 +141,6 @@ describe.each([
 
     const [mapLines, roomLines] = compose<
       string,
-      string,
       string[],
       [string[], string[]]
     >(
@@ -142,22 +149,33 @@ describe.each([
         takeLastWhile<string>(Boolean),
       ]),
       toLines,
-      stripAnsi,
-    )(display); // split on empty line
+    )(plainDisplay); // split on empty line
+
+    expect(mapLines).toBeArray();
+    expect(roomLines).toBeArray();
+
+    expect(
+      reject(
+        compose(
+          either(equals('|'), equals('+')),
+          last,
+        ),
+        mapLines,
+      ),
+    ).toEqual([]);
 
     // all map-lines have the same length
-    const targetLength = mapLines[0].length;
-    for (const line of mapLines) {
-      expect(line).toHaveLength(targetLength);
-    }
+    expect(groupBy(length, mapLines)).toSatisfy(
+      (obj: {}) => Object.keys(obj).length === 1,
+    );
 
-    const [rooms, walls] = partition(testRE(/\d/), mapLines);
+    // const [rooms, walls] = partition(testRE(/\d/), mapLines);
 
-    const hWalls = rooms.map(countSubstr('|'));
-    expect(hWalls).not.toSatisfyAll(equals(width + 1));
+    // const hWalls = rooms.map(countSubstr('|'));
+    // expect(hWalls).not.toSatisfyAll(equals(width + 1));
 
-    const vWalls = walls.map(countSubstr('+'));
-    expect(hWalls).not.toSatisfyAll(equals(height + 1));
+    // const vWalls = walls.map(countSubstr('+'));
+    // expect(hWalls).not.toSatisfyAll(equals(height + 1));
 
     // room line regexp check
     expect(roomLines).toSatisfyAll(testRE(/room \d+ size=\d+ cells=(\d+\,?)+/));

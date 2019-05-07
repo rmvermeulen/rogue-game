@@ -1,27 +1,23 @@
+import { assert } from 'chai';
 import * as os from 'os';
 import {
-  addIndex,
-  append,
+  aperture,
   compose,
   defaultTo,
-  identity,
-  ifElse,
-  is,
-  join,
-  last,
   length,
+  lensPath,
   map,
-  pipe,
+  path,
   pluck,
-  prepend,
-  propEq,
   repeat,
+  set,
   sort,
   subtract,
+  test,
   toString,
-  trim,
-  tryCatch,
+  unnest,
   when,
+  zip,
 } from 'ramda';
 import {
   manyColors,
@@ -81,6 +77,18 @@ export const renderSimple = (grid: Grid, useColors: boolean = true): string => {
   ).join(os.EOL);
 };
 
+// const stringifyLine = (
+//   values: number[],
+// ): { text: string; columnWidths: number[] } => {
+//   return compose<number[], string[], { text: string; columnWidths: number[] }>(
+//     applySpec({
+//       text: (ss: string[]) => `| ${ss.join(' | ')} |`,
+//       columnWidths: pluck('length'),
+//     }),
+//     map(String),
+//   )(values);
+// };
+
 /** render the grid into a string
  * example output:
  * +----+----+---+----+-----+
@@ -101,138 +109,148 @@ export const renderSimple = (grid: Grid, useColors: boolean = true): string => {
  */
 // tslint:disable-next-line: max-func-body-length
 export const render = (grid: Grid, useColors: boolean = true): string => {
-  if (grid.listRooms().length > manyColorsLength) {
-    // tslint:disable-next-line: no-parameter-reassignment
-    useColors = false;
-  }
-  const colors = useColors
-    ? grid.cells.length <= someColorsLength
-      ? someColors()
-      : manyColors()
-    : [];
+  type WallStr = '|' | '+' | '-' | ' ';
 
-  const header = repeat('-', grid.width);
-  const lineFragments: Array<string | string[] | string[][]> = [header];
-  const columnNumberWidth: number[] = generate(grid.width, () => 1);
+  const columnWidths: number[] = generate(grid.width, () => 1);
 
-  for (let y = 0; y < grid.height; y += 1) {
-    const line = [];
-    const separatorLine = [];
-    for (let x = 0; x < grid.width; x += 1) {
-      const cell = grid.cellAt(x, y);
-      const east = grid.cellAt(x + 1, y);
-      const south = grid.cellAt(x, y + 1);
+  const mapLinesA = generate(grid.height, y => {
+    const row = grid.row(y);
+    const roomIds = pluck('roomId', row);
+    generate(grid.width, column => {
+      const tokenWidth = String(roomIds[column]).length;
+      columnWidths[column] = Math.max(columnWidths[column], tokenWidth);
+    });
+    const walls: WallStr[] = [];
+    for (const [a, b] of aperture(2, roomIds)) {
+      const nextWall: WallStr = a === b ? ' ' : '|';
+      walls.push(nextWall);
+    }
+    const [first, ...rest] = roomIds;
 
-      // update the current column-width to the biggest in the column
-      const roomStr = String(cell.roomId);
-      columnNumberWidth[x] = Math.max(columnNumberWidth[x], roomStr.length);
+    return ['|', first, ...unnest(zip(walls, rest)), '|'];
+  });
 
-      let str = roomStr;
-      if (useColors) {
-        const colorize = colors[cell.roomId % colors.length];
-        str = colorize(roomStr);
+  const columnWalls: WallStr[][] = repeat([], grid.width);
+  generate(grid.width, x => {
+    const column = grid.column(x);
+    const walls = columnWalls[x];
+    walls.push('-');
+    for (const [a, b] of aperture(2, pluck('roomId', column))) {
+      const nextWall: WallStr = a === b ? ' ' : '-';
+      walls.push(nextWall);
+    }
+    walls.push('-');
+  });
+
+  const topLine: WallStr[] = mapLinesA[0].map((value: number | WallStr) =>
+    typeof value === 'number' ? '-' : value === '|' ? '+' : '-',
+  );
+  const lastMapLine = mapLinesA[grid.height - 1];
+  const bottomLine: WallStr[] = lastMapLine.map((value: number | WallStr) =>
+    typeof value === 'number' ? '-' : value === '|' ? '+' : '-',
+  );
+  const mapLinesB = [
+    topLine,
+    ...unnest(
+      [...aperture(2, mapLinesA), [lastMapLine, undefined]].map(([a, b], y) => {
+        if (b === undefined) {
+          return [a, bottomLine];
+        }
+        const walls = generate(a.length, x => {
+          const ax = a[x];
+          const bx = b[x];
+
+          if (typeof ax === 'number') {
+            return ax === bx ? ' ' : '-';
+          }
+
+          return ax === bx ? '|' : '+';
+        });
+
+        return [a, walls];
+      }),
+    ),
+  ];
+
+  assert.lengthOf(mapLinesB, grid.height * 2 + 1);
+
+  let updated = mapLinesB;
+
+  generate(grid.height + 1, gy => {
+    generate(grid.width + 1, gx => {
+      const x = gx * 2;
+      const y = gy * 2;
+      // const cornerPart = mapLinesB[y * 2][x * 2];
+      const [n, s, e, w] = [[y - 1, x], [y + 1, x], [y, x - 1], [y, x + 1]]
+        // tslint:disable-next-line: no-any no-unsafe-any
+        .map(p => path(p as any[], mapLinesB))
+        .map(defaultTo(' '));
+      const assignField = (char: string) => {
+        // tslint:disable-next-line: no-any
+        const modify = set(lensPath([y, x]), char) as any;
+        // tslint:disable-next-line: no-unsafe-any
+        updated = modify(updated);
+      };
+      if (n === ' ' && s === ' ' && e === ' ' && w === ' ') {
+        return assignField(' ');
+      }
+      if (e === ' ' && w === ' ') {
+        return assignField('|');
+      }
+      if (n === ' ' && s === ' ') {
+        return assignField('-');
       }
 
-      const isSameRoom = when(
-        Boolean,
-        propEq('roomId' as keyof typeof cell, cell.roomId),
-      );
-      line.push([
-        str,
-        (roomStr.length as unknown) as string /*cheat*/,
-        isSameRoom(east) ? ' ' : '|',
-      ]);
-      separatorLine.push(isSameRoom(south) ? ' ' : '-');
-    }
-    lineFragments.push(line, separatorLine);
-  }
+      return assignField('+');
+    });
+  });
+
+  const lineFragments = updated.map((chunks, y) => {
+    const newLine = chunks.map(String).map((chunk, x) => {
+      const isRoomCenterX = x % 2 === 1;
+      if (!isRoomCenterX) {
+        return chunk;
+      }
+      const isRoomCenterY = y % 2 === 1;
+      const width = defaultTo(1, columnWidths[(x - 1) / 2]);
+
+      const padded = isRoomCenterY
+        ? ` ${chunk.padStart(width)} `
+        : chunk.repeat(width + 2);
+      assert.lengthOf(padded, width + 2);
+
+      return padded;
+    });
+
+    return newLine.join('');
+  });
 
   const rooms = sort(subtract, grid.listRooms())
     .map(id => grid.findRoomById(id))
     .filter(Boolean);
 
-  if (rooms.length > 0) {
-    lineFragments.push(
-      [], // empty line to separate
-      ...rooms.map(
-        ({ id, size, cells }) => `room ${id} size=${size} cells=${cells}`,
-      ),
-    );
+  const roomFragments = rooms.map(
+    ({ id, size, cells }) => `room ${id} size=${size} cells=${cells}`,
+  );
+
+  const renderedString = lineFragments.join(os.EOL);
+
+  if (useColors) {
+    const colors =
+      grid.cells.length <= someColorsLength ? someColors() : manyColors();
+    const getColorizer = (n: number) => colors[n % colors.length];
+
+    return [
+      renderedString
+        .split(' ')
+        .map(
+          when(test(/^\d+$/), (str: string) => getColorizer(Number(str))(str)),
+        )
+        .join(' '),
+      '',
+      ...roomFragments,
+    ].join(os.EOL);
   }
 
-  const mapIndexed = addIndex(map);
-  const defaultTo1 = defaultTo(1);
-
-  let previousWasVerticalWall = true;
-
-  return pipe<typeof lineFragments, string[], string>(
-    map(
-      pipe(
-        ifElse(
-          is(String),
-          identity,
-          pipe(
-            ifElse(
-              ([first]) => is(Array, first),
-              pipe(
-                mapIndexed(
-                  (
-                    [roomIdStr, roomIdStrCharLength, maybeWall]: [
-                      string,
-                      number,
-                      '|' | ' '
-                    ],
-                    column,
-                  ) => {
-                    const width = defaultTo1(columnNumberWidth[column]);
-                    // cannot use String.padEnd because of color in text
-                    const paddedId =
-                      roomIdStr + ' '.repeat(width - roomIdStrCharLength);
-
-                    return `${paddedId} ${maybeWall} `;
-                  },
-                ),
-                (list: string[]) => prepend('| ', list),
-              ),
-              pipe(
-                mapIndexed((wallType: '-' | ' ', column) => {
-                  const width = defaultTo1(columnNumberWidth[column]);
-
-                  const isVerticalWall = wallType === '-';
-
-                  const dot =
-                    isVerticalWall || previousWasVerticalWall
-                      ? '+'
-                      : column === 0
-                      ? '|'
-                      : ' ';
-
-                  previousWasVerticalWall =
-                    column === grid.width - 1 ? isVerticalWall : false;
-
-                  return dot + wallType.repeat(width + 2);
-                }),
-                (lines: string[]) =>
-                  lines.length === 0
-                    ? lines
-                    : // try to read the last character of the last fragment
-                    tryCatch(
-                        pipe<string[], string, string>(
-                          last,
-                          last,
-                        ),
-                        () => ' ',
-                      )(lines) === '-'
-                    ? append('+', lines)
-                    : append('|', lines),
-              ),
-            ),
-            join(''),
-          ),
-        ),
-        trim,
-      ),
-    ),
-    join(os.EOL),
-  )(lineFragments);
+  return [renderedString, '', ...roomFragments].join(os.EOL);
 };

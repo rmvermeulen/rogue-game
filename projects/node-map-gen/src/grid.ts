@@ -87,6 +87,10 @@ export class Grid {
   }
 
   public cellAt(x: number, y: number): undefined | ICell {
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
+      return undefined;
+    }
+
     return this.cells[x + y * this.width];
   }
 

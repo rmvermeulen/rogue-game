@@ -48,9 +48,7 @@ describe('Shuffled pool', () => {
   });
 
   test('get N items by predicate that also checks current set', () => {
-    console.log(pool);
     expect(pool.takeN(5, (_, set) => set.length < 3)).toHaveLength(3);
     expect(pool.size).toBe(1);
-    console.log(pool);
   });
 });
