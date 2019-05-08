@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: 'jsdom',
+  testEnvironment: 'node',
   setupFilesAfterEnv: ['jest-extended', 'expect-more-jest'],
   verbose: true,
   collectCoverage: false,
