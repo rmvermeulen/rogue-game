@@ -8,7 +8,6 @@ import {
   map,
   prop,
   reject,
-  tap,
   uniqBy,
   unnest,
   whereEq,

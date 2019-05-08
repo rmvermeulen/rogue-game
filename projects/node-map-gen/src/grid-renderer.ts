@@ -152,7 +152,7 @@ export const render = (grid: Grid, useColors: boolean = true): string => {
   const mapLinesB = [
     topLine,
     ...unnest(
-      [...aperture(2, mapLinesA), [lastMapLine, undefined]].map(([a, b], y) => {
+      [...aperture(2, mapLinesA), [lastMapLine, undefined]].map(([a, b]) => {
         if (b === undefined) {
           return [a, bottomLine];
         }

@@ -55,7 +55,6 @@ export class Pool<T> {
 
   public takeN(n: number, pred?: SetPred<T>): T[] {
     this.shuffle();
-    const sizeAtStart = this.size;
     if (typeof pred === 'function') {
       const accepted = [];
       const rejected = [];
