@@ -6,12 +6,10 @@ import {
   chain,
   compose,
   head,
-  lensIndex,
   map,
   merge,
   prop,
   sortBy,
-  view,
 } from 'ramda';
 import { ICell, IGridOptions } from '../grid';
 import { Pool } from '../pool';
@@ -63,15 +61,26 @@ const scoreCandidateForRoom = (room: ICell[]) => (
   return [candidate, totalDistance];
 };
 
-const preferCloser = (currentRoom: ICell[], candidates: Candidate[]) =>
-  compose<Candidate[], Array<Scored<Candidate>>, Scored<Candidate>, Candidate>(
+const sortByScore: (
+  cs: Array<Scored<Candidate>>,
+) => Array<Scored<Candidate>> = sortBy(prop(1));
+
+const preferCloser = (
+  currentRoom: ICell[],
+  candidates: Candidate[],
+): Candidate =>
+  // tslint:disable-next-line: no-unsafe-any
+  compose(
     head,
     weightedPick,
-    sortBy(view(lensIndex(1))),
+    sortByScore,
     map(scoreCandidateForRoom(currentRoom)),
   )(candidates);
 
-const pickClosest = (currentRoom: ICell[], candidates: Candidate[]) =>
+const pickClosest = (
+  currentRoom: ICell[],
+  candidates: Candidate[],
+): Candidate =>
   compose<Candidate[], Array<Scored<Candidate>>, Candidate>(
     pickChampion,
     map(scoreCandidateForRoom(currentRoom)),
