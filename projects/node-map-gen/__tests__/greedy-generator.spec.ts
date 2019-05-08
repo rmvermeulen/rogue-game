@@ -1,21 +1,25 @@
 import * as os from 'os';
 
 import { compose, contains, filter, pluck, test as testRE, uniq } from 'ramda';
-import { generateCells } from '../src/generators/greedy';
+import { generateCells, IGreedyOptions } from '../src/generators/greedy';
 import { Grid, ICell } from '../src/grid';
 import { render } from '../src/grid-renderer';
 
 describe.each`
-  width | height | roomCount
-  ${5}  | ${5}   | ${4}
-  ${5}  | ${5}   | ${10}
-  ${10} | ${10}  | ${4}
-  ${10} | ${10}  | ${10}
-  ${10} | ${10}  | ${35}
-  ${20} | ${20}  | ${40}
+  width | height | roomCount | pickMethod
+  ${5}  | ${5}   | ${4}      | ${'random'}
+  ${5}  | ${5}   | ${4}      | ${'closest'}
+  ${5}  | ${5}   | ${10}     | ${'closest'}
+  ${5}  | ${5}   | ${10}     | ${'prefer closer'}
+  ${10} | ${10}  | ${4}      | ${'closest'}
+  ${10} | ${10}  | ${10}     | ${'random'}
+  ${10} | ${10}  | ${35}     | ${'prefer closer'}
+  ${20} | ${20}  | ${40}     | ${'random'}
+  ${20} | ${20}  | ${40}     | ${'prefer closer'}
+  ${20} | ${20}  | ${40}     | ${'closest'}
 `(
-  'greedily generated grid $width $height $roomCount',
-  ({ width, height, roomCount }: { [key: string]: number }) => {
+  'greedily generated grid $width $height $roomCount "$pickMethod"',
+  ({ width, height, roomCount, pickMethod }: IGreedyOptions) => {
     jest.setTimeout(3e3);
     let cells: ICell[];
     let grid: Grid;
@@ -25,6 +29,7 @@ describe.each`
         width,
         height,
         roomCount,
+        pickMethod,
       });
       grid = Grid.FROM_CELLS(width, height, cells);
       display = render(grid, true);

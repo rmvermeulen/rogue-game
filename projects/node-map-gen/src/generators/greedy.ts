@@ -5,14 +5,27 @@ import {
   assoc,
   chain,
   compose,
+  head,
+  isEmpty,
+  length,
+  lensIndex,
+  map,
   merge,
   prop,
+  reduce,
   sortBy,
+  unless,
+  view,
+  when,
 } from 'ramda';
+
 import { ICell, IGridOptions } from '../grid';
 import { Pool } from '../pool';
+
 import { random } from '../random';
+import { weightedPick } from '../utils';
 import {
+  Candidate,
   createCell,
   findCandidatesFrom,
   gridFactory,
@@ -27,8 +40,54 @@ const applyRoomIds = addIndex<ICell[], ICell[][], ICell[]>(chain)(
   },
 );
 
+type Scored<T> = [T, number];
+const pickChampion = (input: Array<Scored<Candidate>>): Candidate => {
+  if (input.length === 0) {
+    return undefined;
+  }
+
+  const [champ] = input.reduce(
+    (
+      candidate: Scored<Candidate>,
+      champion: Scored<Candidate>,
+    ): Scored<Candidate> => (champion[1] < candidate[1] ? champion : candidate),
+  );
+
+  return champ;
+};
+
+const scoreCandidateForRoom = (room: ICell[]) => (
+  candidate: Candidate,
+): Scored<Candidate> => {
+  const totalDistance = room.reduce(
+    (total, cell) =>
+      total +
+      (Math.sqrt((candidate.x - cell.y) ** 2) +
+        Math.sqrt(candidate.y - cell.y) ** 2),
+    0,
+  );
+
+  return [candidate, totalDistance];
+};
+
+const preferCloser = (currentRoom: ICell[], candidates: Candidate[]) =>
+  compose<Candidate[], Array<Scored<Candidate>>, Scored<Candidate>, Candidate>(
+    head,
+    weightedPick,
+    sortBy(view(lensIndex(1))),
+    map(scoreCandidateForRoom(currentRoom)),
+  )(candidates);
+
+const pickClosest = (currentRoom: ICell[], candidates: Candidate[]) =>
+  compose<Candidate[], Array<Scored<Candidate>>, Candidate>(
+    pickChampion,
+    map(scoreCandidateForRoom(currentRoom)),
+  )(candidates);
+
 // tslint:disable-next-line: no-empty-interface
-export interface IGreedyOptions extends IGridOptions {}
+export interface IGreedyOptions extends IGridOptions {
+  pickMethod?: 'random' | 'closest' | 'prefer closer';
+}
 
 export const generateCells = (options: IGreedyOptions): ICell[] => {
   const cells = gridFactory(
@@ -40,6 +99,8 @@ export const generateCells = (options: IGreedyOptions): ICell[] => {
     ),
   );
   const pool = new Pool(cells);
+  const idOf = prop('id');
+  pool.useEq((a, b) => idOf(a) === idOf(b));
   // pick a starting cell for each room
   // must be unique (handled by pool)
   // must not be locked in on 4 sides
@@ -76,12 +137,31 @@ export const generateCells = (options: IGreedyOptions): ICell[] => {
       }
       // find cells adjacent to cell in current room
       // NOTE: maybe use pool.take[N/Many] with constraints
+
       const candidates = findCandidatesFrom(pool.ref())(rooms[i], true);
       if (candidates.length === 0) {
         continue;
       }
-      // NOTE: pick best cell by number of neighbors?
-      const picked = random.pickone(candidates);
+
+      let picked: Candidate | undefined;
+      switch (options.pickMethod) {
+        case 'random':
+          picked = random.pickone(candidates);
+          break;
+
+        case 'closest':
+          picked = pickClosest(rooms[i], candidates);
+          break;
+
+        default:
+        case 'prefer closer':
+          picked = preferCloser(rooms[i], candidates);
+      }
+
+      if (picked === undefined) {
+        continue;
+      }
+
       // remove from pool
       pool.remove([picked]);
       // add cell to list for the current room
