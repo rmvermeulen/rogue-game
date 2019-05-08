@@ -6,22 +6,15 @@ import {
   chain,
   compose,
   head,
-  isEmpty,
-  length,
   lensIndex,
   map,
   merge,
   prop,
-  reduce,
   sortBy,
-  unless,
   view,
-  when,
 } from 'ramda';
-
 import { ICell, IGridOptions } from '../grid';
 import { Pool } from '../pool';
-
 import { random } from '../random';
 import { weightedPick } from '../utils';
 import {
