@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import { equals, head, partition, splitAt, splitWhen, tail } from 'ramda';
-import { withoutBy } from './generators/utils';
+import { withoutBy } from './utils';
 
 type IsEqual<T> = (a: T, b: T) => boolean;
 type Pred<T> = (a: T) => boolean;

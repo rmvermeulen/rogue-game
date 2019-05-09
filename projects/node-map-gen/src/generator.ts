@@ -11,16 +11,16 @@ import {
   prop,
   sortBy,
 } from 'ramda';
+import { ICell, IGridOptions } from './grid';
+import { Pool } from './pool';
 import {
   Candidate,
   createCell,
   findCandidatesFrom,
   gridFactory,
   manhattan,
-} from './generators/utils';
-import { ICell, IGridOptions } from './grid';
-import { Pool } from './pool';
-import { weightedPick } from './utils';
+  weightedPick,
+} from './utils';
 
 const applyRoomIds = addIndex<ICell[], ICell[][], ICell[]>(chain)(
   (cells: ICell[], roomId: number): ICell[] => {
