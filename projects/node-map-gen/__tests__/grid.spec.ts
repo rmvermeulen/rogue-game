@@ -1,10 +1,9 @@
-// tslint:disable no-import-side-effect no-implicit-dependencies
-
-jest.mock('../src/random');
-
+// tslint:disable-next-line: no-import-side-effect no-implicit-dependencies
 import 'jest-extended';
-import { contains, filter, pipe, pluck, zip } from 'ramda';
+
+import { zip } from 'ramda';
 import { Grid, ICell, IRoom } from '../src/grid';
+import { createRNG } from '../src/random';
 import { generate } from '../src/utils';
 
 describe.each([
@@ -23,7 +22,12 @@ describe.each([
     let grid: Grid;
 
     beforeAll(() => {
-      grid = Grid.CREATE({ width, height, roomCount });
+      grid = Grid.CREATE({
+        width,
+        height,
+        roomCount,
+        rng: createRNG(12345),
+      });
     });
     it('is a grid', () => {
       expect(grid).toBeDefined();

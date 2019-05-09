@@ -52,4 +52,9 @@ compose(
   render,
   Grid.CREATE,
   tap(gridOptions => console.log(JSON.stringify(gridOptions, undefined, 2))),
-)({ width, height, roomCount });
+)({
+  width,
+  height,
+  roomCount,
+  rng: random,
+});

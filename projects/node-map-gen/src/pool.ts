@@ -1,6 +1,6 @@
+import { assert } from 'chai';
 import { equals, head, partition, splitAt, splitWhen, tail } from 'ramda';
 import { withoutBy } from './generators/utils';
-import { random } from './random';
 
 type IsEqual<T> = (a: T, b: T) => boolean;
 type Pred<T> = (a: T) => boolean;
@@ -9,10 +9,10 @@ type SetPred<T> = (a: T, set: T[]) => boolean;
 
 export class Pool<T> {
   private isEq: IsEqual<T> = equals;
-  constructor(
-    private items: T[] = [],
-    private readonly rng: Chance.Chance = random,
-  ) {}
+  constructor(private items: T[], private readonly rng: Chance.Chance) {
+    assert.isArray(items, '[Pool] Invalid items');
+    assert.property(rng, 'shuffle', '[Pool] Invalid rng');
+  }
 
   public useEq(eq: Pool<T>['isEq']) {
     this.isEq = eq;
@@ -58,6 +58,7 @@ export class Pool<T> {
     if (typeof pred === 'function') {
       const accepted = [];
       const rejected = [];
+      assert.isArray(this.items, '[Pool] Items invalid');
       for (const item of this.items) {
         if (pred(item, accepted)) {
           accepted.push(item);
@@ -81,7 +82,9 @@ export class Pool<T> {
     this.items = withoutBy(this.isEq, toRemove, this.items);
   }
 
-  private shuffle() {
-    this.items = this.rng.shuffle(this.items);
+  public shuffle() {
+    const shuffled = this.rng.shuffle(this.items);
+    assert.isArray(shuffled, 'Shuffled array invalid');
+    this.items = shuffled;
   }
 }

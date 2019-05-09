@@ -1,3 +1,5 @@
 import * as Chance from 'chance';
 
-export const random = new Chance();
+export const createRNG = (seed?: number) => new Chance(seed);
+
+export const random = createRNG();

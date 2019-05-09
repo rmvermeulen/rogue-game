@@ -4,6 +4,7 @@ import { compose, contains, filter, pluck, test as testRE, uniq } from 'ramda';
 import { generateCells, IGeneratorOptions } from '../src/generator';
 import { Grid, ICell } from '../src/grid';
 import { render } from '../src/grid-renderer';
+import { createRNG } from '../src/random';
 
 describe.each`
   width | height | roomCount | pickMethod
@@ -18,7 +19,7 @@ describe.each`
   ${20} | ${20}  | ${40}     | ${'prefer closer'}
   ${20} | ${20}  | ${40}     | ${'closest'}
 `(
-  'greedily generated grid $width $height $roomCount "$pickMethod"',
+  'generated grid $width $height $roomCount "$pickMethod"',
   ({ width, height, roomCount, pickMethod }: IGeneratorOptions) => {
     jest.setTimeout(3e3);
     let cells: ICell[];
@@ -30,6 +31,7 @@ describe.each`
         height,
         roomCount,
         pickMethod,
+        rng: createRNG(12345),
       });
       grid = Grid.FROM_CELLS(width, height, cells);
       display = render(grid, true);

@@ -20,7 +20,6 @@ import {
 } from './generators/utils';
 import { ICell, IGridOptions } from './grid';
 import { Pool } from './pool';
-import { random } from './random';
 import { weightedPick } from './utils';
 
 const applyRoomIds = addIndex<ICell[], ICell[][], ICell[]>(chain)(
@@ -100,7 +99,7 @@ export const generateCells = (options: IGeneratorOptions): ICell[] => {
       createCell,
     ),
   );
-  const pool = new Pool(cells);
+  const pool = new Pool(cells, options.rng);
   const idOf = prop('id');
   pool.useEq((a, b) => idOf(a) === idOf(b));
   // pick a starting cell for each room
@@ -127,11 +126,11 @@ export const generateCells = (options: IGeneratorOptions): ICell[] => {
   const assignedCells = [...initialCells];
   const rooms: ICell[][] = initialCells.map(cell => [cell]);
   // remaining cells are the pool
-  let limit = 1000;
+  let safetyLimit = 10000;
   // for each room
 
-  while (limit > 0 && pool.size > 0) {
-    limit -= 1;
+  while (safetyLimit > 0 && pool.size > 0) {
+    safetyLimit -= 1;
     for (let i = 0; i < options.roomCount; i += 1) {
       // if pool is empty break;
       if (pool.size === 0) {
@@ -148,7 +147,7 @@ export const generateCells = (options: IGeneratorOptions): ICell[] => {
       let picked: Candidate | undefined;
       switch (options.pickMethod) {
         case 'random':
-          picked = random.pickone(candidates);
+          picked = options.rng.pickone(candidates);
           break;
 
         case 'closest':
@@ -171,6 +170,8 @@ export const generateCells = (options: IGeneratorOptions): ICell[] => {
       assignedCells.push(picked);
     }
   }
+
+  assert(safetyLimit, 'Too many loops');
 
   return compose(
     sortBy(prop('id')),

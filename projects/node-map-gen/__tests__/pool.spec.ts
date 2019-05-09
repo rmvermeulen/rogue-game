@@ -1,13 +1,20 @@
 import { Pool } from '../src/pool';
+import { createRNG } from '../src/random';
 
 describe('Shuffled pool', () => {
   let pool: Pool<number>;
   beforeEach(() => {
-    pool = new Pool([1, 2, 3, 4]);
+    pool = new Pool([1, 2, 3, 4], createRNG(12345));
   });
 
   it('contains items', () => {
     expect(pool.size).toBe(4);
+  });
+
+  it('can be shuffled', () => {
+    expect(pool).toHaveProperty('items', expect.toBeArrayOfSize(4));
+    pool.shuffle();
+    expect(pool).toHaveProperty('items', expect.toBeArrayOfSize(4));
   });
 
   it('can take items', () => {

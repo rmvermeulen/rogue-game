@@ -1,7 +1,6 @@
-jest.doMock('../src/random');
-
 // tslint:disable-next-line: no-implicit-dependencies no-import-side-effect
 import 'jest-extended';
+
 import { equals, objOf, pluck, range, uniq } from 'ramda';
 import {
   findCandidatesFrom,

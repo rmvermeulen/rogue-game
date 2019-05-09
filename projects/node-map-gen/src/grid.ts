@@ -19,6 +19,7 @@ export interface IGridOptions extends Partial<Grid> {
   height: number;
   roomCount: number;
   cells?: ICell[];
+  rng: Chance.Chance;
 }
 
 export interface ICell {
@@ -44,18 +45,26 @@ export class Grid {
   public readonly height: number;
   public readonly cells: ICell[];
   public readonly roomCount: number;
+  public readonly rng: Chance.Chance;
   private cachedRoomList: number[] | undefined;
   private constructor(options: IGridOptions) {
-    const { width, height, roomCount, cells } = options;
+    const { width, height, roomCount, cells, rng } = options;
+    assert.isNumber(width, '[Grid] Invalid width');
+    assert.isNumber(roomCount, '[Grid] Invalid roomCount');
+    assert.isObject(rng, '[Grid] Invalid rng');
+    assert.isNumber(height, '[Grid] Invalid height');
+
     this.width = width;
     this.height = height;
     this.roomCount = roomCount;
-    const isClone = options instanceof Grid;
-    if (isClone) {
+    this.rng = rng;
+
+    // are we cloning an existing grid?
+    if (options instanceof Grid) {
       assert.lengthOf(
         cells,
         width * height,
-        'Invalid Grid.CLONE: incomplete source',
+        '[Grid] Invalid clone: incomplete source',
       );
       this.cells = clone(cells);
     } else {

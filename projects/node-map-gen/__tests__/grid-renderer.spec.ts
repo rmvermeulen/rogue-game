@@ -1,13 +1,7 @@
-jest.doMock('../src/random');
-
 // tslint:disable no-import-side-effect no-implicit-dependencies
 import 'jest-extended';
-import '../src/strip-ansi.d';
-// tslint:enable no-import-side-effect no-implicit-dependencies
-
 import * as os from 'os';
 import {
-  aperture,
   compose,
   converge,
   either,
@@ -15,7 +9,6 @@ import {
   groupBy,
   last,
   length,
-  map,
   partition,
   reject,
   split,
@@ -26,6 +19,8 @@ import {
 import * as stripAnsi from 'strip-ansi';
 import { Grid } from '../src/grid';
 import { render } from '../src/grid-renderer';
+import { createRNG } from '../src/random';
+import '../src/strip-ansi.d';
 
 const toLines: (str: string) => string[] = split(os.EOL);
 
@@ -36,7 +31,7 @@ const countSubstr = (str: string) =>
     split(str),
   );
 
-describe('Examples', () => {
+describe('Inline examples', () => {
   const renderCells = (w: number, h: number, roomIds: number[]) =>
     render(
       Grid.FROM_CELLS(
@@ -115,13 +110,14 @@ describe.each([
   [10, 5, 16],
   [5, 10, 16],
   [10, 10, 16],
-])('Random grids to render', (width, height, roomCount) => {
+])('Grid rendering', (width, height, roomCount) => {
   let grid: Grid;
   beforeAll(() => {
     grid = Grid.CREATE({
       width,
       height,
       roomCount,
+      rng: createRNG(12345),
     });
     expect(grid).toBeDefined();
   });
@@ -169,13 +165,13 @@ describe.each([
       (obj: {}) => Object.keys(obj).length === 1,
     );
 
-    // const [rooms, walls] = partition(testRE(/\d/), mapLines);
+    const [rooms, walls] = partition(testRE(/\d/), mapLines);
 
-    // const hWalls = rooms.map(countSubstr('|'));
-    // expect(hWalls).not.toSatisfyAll(equals(width + 1));
+    const hWalls = rooms.map(countSubstr('|'));
+    expect(hWalls).not.toSatisfyAll(equals(width + 1));
 
-    // const vWalls = walls.map(countSubstr('+'));
-    // expect(hWalls).not.toSatisfyAll(equals(height + 1));
+    const vWalls = walls.map(countSubstr('+'));
+    expect(hWalls).not.toSatisfyAll(equals(height + 1));
 
     // room line regexp check
     expect(roomLines).toSatisfyAll(testRE(/room \d+ size=\d+ cells=(\d+\,?)+/));
