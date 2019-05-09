@@ -8,6 +8,7 @@
     "missing-jsdoc": false,
     "mocha-no-side-effect-code": false,
     "no-function-constructor-with-string-args": false,
+    "no-import-side-effect": false,
     "no-increment-decrement": false,
     "no-object-literal-type-assertion": [
       true,
