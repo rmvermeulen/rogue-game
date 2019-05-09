@@ -1,1 +1,1 @@
-*-jest,jest-*,prettier-*,tslint-*,@types/*,utility-types
+*-jest,jest-*,prettier-*,tslint-*,@types/*,utility-types,ramda-adjunct
