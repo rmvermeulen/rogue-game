@@ -11,17 +11,17 @@ import {
   prop,
   sortBy,
 } from 'ramda';
-import { ICell, IGridOptions } from '../grid';
-import { Pool } from '../pool';
-import { random } from '../random';
-import { weightedPick } from '../utils';
 import {
   Candidate,
   createCell,
   findCandidatesFrom,
   gridFactory,
   manhattan,
-} from './utils';
+} from './generators/utils';
+import { ICell, IGridOptions } from './grid';
+import { Pool } from './pool';
+import { random } from './random';
+import { weightedPick } from './utils';
 
 const applyRoomIds = addIndex<ICell[], ICell[][], ICell[]>(chain)(
   (cells: ICell[], roomId: number): ICell[] => {
@@ -87,11 +87,11 @@ const pickClosest = (
   )(candidates);
 
 // tslint:disable-next-line: no-empty-interface
-export interface IGreedyOptions extends IGridOptions {
+export interface IGeneratorOptions extends IGridOptions {
   pickMethod?: 'random' | 'closest' | 'prefer closer';
 }
 
-export const generateCells = (options: IGreedyOptions): ICell[] => {
+export const generateCells = (options: IGeneratorOptions): ICell[] => {
   const cells = gridFactory(
     options.width,
     options.height,

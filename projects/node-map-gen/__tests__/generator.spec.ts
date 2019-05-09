@@ -1,7 +1,7 @@
 import * as os from 'os';
 
 import { compose, contains, filter, pluck, test as testRE, uniq } from 'ramda';
-import { generateCells, IGreedyOptions } from '../src/generators/greedy';
+import { generateCells, IGeneratorOptions } from '../src/generator';
 import { Grid, ICell } from '../src/grid';
 import { render } from '../src/grid-renderer';
 
@@ -19,7 +19,7 @@ describe.each`
   ${20} | ${20}  | ${40}     | ${'closest'}
 `(
   'greedily generated grid $width $height $roomCount "$pickMethod"',
-  ({ width, height, roomCount, pickMethod }: IGreedyOptions) => {
+  ({ width, height, roomCount, pickMethod }: IGeneratorOptions) => {
     jest.setTimeout(3e3);
     let cells: ICell[];
     let grid: Grid;

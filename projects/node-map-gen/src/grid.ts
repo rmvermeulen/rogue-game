@@ -11,7 +11,7 @@ import {
   sortWith,
   uniq,
 } from 'ramda';
-import { generateCells } from './generators/greedy';
+import { generateCells } from './generator';
 import { generate } from './utils';
 
 export interface IGridOptions extends Partial<Grid> {
