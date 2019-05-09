@@ -4,7 +4,7 @@ module.exports = {
   setupFilesAfterEnv: ['jest-extended', 'expect-more-jest'],
   verbose: true,
   collectCoverage: false,
-  coveragePathIgnorePatterns: ['.json'],
+  coveragePathIgnorePatterns: ['.json', '.d.ts'],
   globals: {
     'ts-jest': {
       diagnostics: {
