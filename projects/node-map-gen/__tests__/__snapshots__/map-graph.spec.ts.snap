@@ -1,0 +1,193 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Map graph 5 5 4 is a graph 1`] = `
+"roomId: 2
+children:
+  - roomId: 3
+    children: []
+  - roomId: 0
+    children:
+      - roomId: 1
+        children: []
+"
+`;
+
+exports[`Map graph 5 5 16 is a graph 1`] = `
+"roomId: 2
+children:
+  - roomId: 3
+    children:
+      - roomId: 5
+        children: []
+  - roomId: 13
+    children:
+      - roomId: 10
+        children:
+          - roomId: 15
+            children:
+              - roomId: 14
+                children:
+                  - roomId: 0
+                    children:
+                      - roomId: 7
+                        children:
+                          - roomId: 8
+                            children:
+                              - roomId: 9
+                                children: []
+                              - roomId: 4
+                                children: []
+                  - roomId: 11
+                    children: []
+              - roomId: 1
+                children:
+                  - roomId: 6
+                    children: []
+              - roomId: 12
+                children: []
+"
+`;
+
+exports[`Map graph 5 10 4 is a graph 1`] = `
+"roomId: 0
+children:
+  - roomId: 1
+    children: []
+  - roomId: 2
+    children:
+      - roomId: 3
+        children: []
+"
+`;
+
+exports[`Map graph 5 10 16 is a graph 1`] = `
+"roomId: 12
+children:
+  - roomId: 10
+    children:
+      - roomId: 1
+        children:
+          - roomId: 14
+            children:
+              - roomId: 15
+                children: []
+              - roomId: 8
+                children:
+                  - roomId: 13
+                    children:
+                      - roomId: 4
+                        children:
+                          - roomId: 5
+                            children: []
+                      - roomId: 2
+                        children: []
+                      - roomId: 3
+                        children: []
+                  - roomId: 6
+                    children: []
+      - roomId: 0
+        children:
+          - roomId: 7
+            children: []
+  - roomId: 11
+    children: []
+  - roomId: 9
+    children: []
+"
+`;
+
+exports[`Map graph 10 5 4 is a graph 1`] = `
+"roomId: 1
+children:
+  - roomId: 0
+    children:
+      - roomId: 2
+        children: []
+      - roomId: 3
+        children: []
+"
+`;
+
+exports[`Map graph 10 5 16 is a graph 1`] = `
+"roomId: 11
+children:
+  - roomId: 0
+    children:
+      - roomId: 14
+        children:
+          - roomId: 6
+            children:
+              - roomId: 4
+                children:
+                  - roomId: 13
+                    children:
+                      - roomId: 3
+                        children: []
+                      - roomId: 12
+                        children: []
+                      - roomId: 2
+                        children:
+                          - roomId: 8
+                            children:
+                              - roomId: 15
+                                children:
+                                  - roomId: 10
+                                    children: []
+                                  - roomId: 9
+                                    children:
+                                      - roomId: 5
+                                        children: []
+      - roomId: 7
+        children: []
+      - roomId: 1
+        children: []
+"
+`;
+
+exports[`Map graph 10 10 4 is a graph 1`] = `
+"roomId: 1
+children:
+  - roomId: 3
+    children: []
+  - roomId: 0
+    children: []
+  - roomId: 2
+    children: []
+"
+`;
+
+exports[`Map graph 10 10 16 is a graph 1`] = `
+"roomId: 9
+children:
+  - roomId: 4
+    children:
+      - roomId: 10
+        children:
+          - roomId: 2
+            children:
+              - roomId: 13
+                children:
+                  - roomId: 8
+                    children:
+                      - roomId: 12
+                        children:
+                          - roomId: 11
+                            children:
+                              - roomId: 7
+                                children:
+                                  - roomId: 1
+                                    children: []
+                          - roomId: 0
+                            children: []
+              - roomId: 3
+                children: []
+      - roomId: 5
+        children: []
+      - roomId: 6
+        children: []
+  - roomId: 15
+    children: []
+  - roomId: 14
+    children: []
+"
+`;
