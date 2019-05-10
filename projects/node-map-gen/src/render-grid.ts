@@ -108,7 +108,7 @@ export const renderSimple = (grid: Grid, useColors: boolean = true): string => {
  * room 2 size=8 cells=2,3,7,8,12,13,17,18
  */
 // tslint:disable-next-line: max-func-body-length
-export const renderGrid = (grid: Grid, useColors: boolean = true): string => {
+export const renderGrid = (grid: Grid, useColors: boolean = false): string => {
   type WallStr = '|' | '+' | '-' | ' ';
 
   const columnWidths: number[] = generate(grid.width, () => 1);

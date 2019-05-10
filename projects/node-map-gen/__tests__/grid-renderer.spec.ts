@@ -123,10 +123,11 @@ describe.each([
   });
 
   test('render', () => {
-    const display = renderGrid(grid);
+    const display = renderGrid(grid, true);
+    expect(display).toMatchSnapshot();
+
     const plainDisplay = stripAnsi(display);
     expect(plainDisplay).toMatchSnapshot();
-    expect(display).toMatchSnapshot();
 
     // display format
     // map line 1
