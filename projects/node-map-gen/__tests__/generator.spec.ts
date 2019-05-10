@@ -3,8 +3,8 @@ import * as os from 'os';
 import { compose, contains, filter, pluck, test as testRE, uniq } from 'ramda';
 import { generateCells, IGeneratorOptions } from '../src/generator';
 import { Grid, ICell } from '../src/grid';
-import { render } from '../src/grid-renderer';
 import { createRNG } from '../src/random';
+import { renderGrid } from '../src/render-grid';
 
 describe.each`
   width | height | roomCount | pickMethod
@@ -34,7 +34,7 @@ describe.each`
         rng: createRNG(12345),
       });
       grid = Grid.FROM_CELLS(width, height, cells);
-      display = render(grid, true);
+      display = renderGrid(grid, true);
       // tslint:disable-next-line: no-console
       console.log(display);
     });

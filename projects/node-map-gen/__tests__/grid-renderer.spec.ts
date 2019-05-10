@@ -18,8 +18,8 @@ import {
 } from 'ramda';
 import * as stripAnsi from 'strip-ansi';
 import { Grid } from '../src/grid';
-import { render } from '../src/grid-renderer';
 import { createRNG } from '../src/random';
+import { renderGrid } from '../src/render-grid';
 import '../src/strip-ansi.d';
 
 const toLines: (str: string) => string[] = split(os.EOL);
@@ -33,7 +33,7 @@ const countSubstr = (str: string) =>
 
 describe('Inline examples', () => {
   const renderCells = (w: number, h: number, roomIds: number[]) =>
-    render(
+    renderGrid(
       Grid.FROM_CELLS(
         w,
         h,
@@ -123,7 +123,7 @@ describe.each([
   });
 
   test('render', () => {
-    const display = render(grid);
+    const display = renderGrid(grid);
     const plainDisplay = stripAnsi(display);
     expect(plainDisplay).toMatchSnapshot();
     expect(display).toMatchSnapshot();

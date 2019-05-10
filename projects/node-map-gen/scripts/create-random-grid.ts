@@ -4,7 +4,7 @@ import { Chance } from 'chance';
 import * as parseArgv from 'minimist';
 import { compose, tap, zipObj } from 'ramda';
 import { Grid, IGridOptions } from '../src/grid';
-import { render } from '../src/grid-renderer';
+import { render } from '../src/render-grid';
 import { generate } from '../src/utils';
 
 // tslint:disable no-console strict-boolean-expressions

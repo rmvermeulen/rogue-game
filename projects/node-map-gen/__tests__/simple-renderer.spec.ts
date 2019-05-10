@@ -5,8 +5,8 @@ import * as os from 'os';
 import { compose, length, split, uniqBy } from 'ramda';
 import * as stripAnsi from 'strip-ansi';
 import { Grid } from '../src/grid';
-import { renderSimple } from '../src/grid-renderer';
 import { createRNG } from '../src/random';
+import { renderSimple } from '../src/render-grid';
 
 const toLines: (str: string) => string[] = split(os.EOL);
 
