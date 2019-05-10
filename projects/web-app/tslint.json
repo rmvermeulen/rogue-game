@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "tslint-eslint-rules",
+    "tslint:recommended",
+    "tslint-config-prettier"
+  ],
+  "rules": {
+    "no-console": false,
+    "object-literal-sort-keys": false,
+    "ordered-imports": [
+      true,
+      {
+        "grouped-imports": true
+      }
+    ],
+    "interface-name": false
+  }
+}
