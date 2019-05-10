@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.release.json",
     "build:watch": "tsc -w -p tsconfig.release.json",
-    "check-deps": "depcheck --skip-missing --ignore-bin-package --ignores $(cat .depcheckignore)",
+    "check-deps": "depcheck --skip-missing --ignore-bin-package --ignores $(cat .depcheckignore) || true",
     "clean": "rimraf coverage build tmp",
     "lint": "tslint -t stylish -p tsconfig.json",
     "lint:test": "tslint -t stylish -p tsconfig.test.json -c tslint.test.json",
