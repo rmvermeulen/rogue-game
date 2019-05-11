@@ -10,7 +10,7 @@
       "web-app/typescript",
       "web-app/react*/**",
       "web-app/*-loader",
-      "web-app/@babel*"
+      "**/@types/*"
     ],
     "packages": [
       "projects/*"
