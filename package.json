@@ -4,7 +4,14 @@
   "devDependencies": {
     "lerna": "^3.13.4"
   },
-  "workspaces": [
-    "projects/*"
-  ]
+  "workspaces": {
+    "nohoist": [
+      "**/typescript",
+      "**/parcel/**",
+      "**/react*/**"
+    ],
+    "packages": [
+      "projects/*"
+    ]
+  }
 }
