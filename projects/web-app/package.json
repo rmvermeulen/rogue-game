@@ -5,7 +5,9 @@
   "scripts": {
     "test": "jest",
     "serve": "parcel serve src/index.html",
-    "build": "parcel build src/index.html"
+    "build": "parcel build src/index.html",
+    "pre-commit": "pretty-quick --write && lint-staged",
+    "pre-push": "(yarn lint & tsc --noEmit) && jest --ci"
   },
   "private": true,
   "license": "MIT",
@@ -16,7 +18,6 @@
     "@types/react-dom": "^16.8.4",
     "config-presets": "^1.1.16",
     "debug": "^4.1.1",
-    "husky": "^2.2.0",
     "jest": "^24.8.0",
     "lint-staged": "^8.1.6",
     "parcel": "^1.12.3",
