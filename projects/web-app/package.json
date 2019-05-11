@@ -7,6 +7,7 @@
     "serve": "parcel serve src/index.html",
     "build": "parcel build src/index.html"
   },
+  "private": true,
   "license": "MIT",
   "devDependencies": {
     "@types/debug": "^4.1.4",
