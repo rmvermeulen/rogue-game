@@ -7,9 +7,10 @@
   },
   "workspaces": {
     "nohoist": [
-      "**/typescript",
-      "**/parcel/**",
-      "**/react*/**"
+      "web-app/typescript",
+      "web-app/react*/**",
+      "web-app/*-loader",
+      "web-app/@babel*"
     ],
     "packages": [
       "projects/*"
