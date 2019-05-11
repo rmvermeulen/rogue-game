@@ -1,4 +1,4 @@
-import { natural } from '../src/utils';
+import { natural } from '@src/utils';
 
 describe('natural number helper', () => {
   it.each([

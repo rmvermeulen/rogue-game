@@ -5,12 +5,14 @@ import {
   compose,
   filter,
   lte,
+  omit,
   pluck,
   prop,
   propEq,
   sortWith,
   uniq,
 } from 'ramda';
+import { Omit } from 'utility-types';
 import { generateCells } from './generator';
 import { generate } from './utils';
 
@@ -68,7 +70,7 @@ export class Grid {
       );
       this.cells = clone(cells);
     } else {
-      this.cells = this.generateCells();
+      this.cells = generateCells(this);
     }
   }
 
@@ -149,7 +151,7 @@ export class Grid {
       : undefined;
   }
 
-  private generateCells() {
-    return generateCells(this);
+  public toObject(): Omit<Grid, 'rng'> {
+    return omit(['rng'], this);
   }
 }

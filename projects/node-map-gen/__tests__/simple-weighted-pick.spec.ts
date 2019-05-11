@@ -1,5 +1,5 @@
 import { compose, groupBy, identity, length, map } from 'ramda';
-import { generate, weightedPick } from '../src/utils';
+import { generate, weightedPick } from '@src/utils';
 
 describe('simple weighted pick', () => {
   it('picks an earlier element more often than any later element', () => {

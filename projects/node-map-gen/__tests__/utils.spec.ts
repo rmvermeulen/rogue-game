@@ -10,7 +10,7 @@ import {
   pickInitialRoomCells,
   withoutBy,
   withoutById,
-} from '../src/utils';
+} from '@src/utils';
 
 describe('utils', () => {
   test('withoutBy', () => {

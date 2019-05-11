@@ -49,12 +49,8 @@ export type MapNode = {
 
 export const createGraph = (
   grid: Grid,
-  rng?: Pick<Chance.Chance, 'pickone' | 'pickset'>,
+  rng: Pick<Chance.Chance, 'pickone' | 'pickset'> = grid.rng,
 ) => {
-  if (rng === undefined) {
-    // tslint:disable-next-line: no-parameter-reassignment
-    rng = grid.rng;
-  }
   const rooms = updateConnections(grid);
   const rootRoom = rng.pickone(rooms);
   const nodeSize = (node: MapNode): number =>

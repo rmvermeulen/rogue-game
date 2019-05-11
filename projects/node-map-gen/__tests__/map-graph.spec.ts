@@ -2,9 +2,9 @@
 
 import 'jest-extended';
 import { stringify } from 'yaml';
-import { Grid } from '../src/grid';
-import { createGraph, MapNode } from '../src/map-graph';
-import { createRNG } from '../src/random';
+import { Grid } from '@src/grid';
+import { createGraph, MapNode } from '@src/map-graph';
+import { createRNG } from '@src/random';
 
 describe.each([
   [5, 5, 4],

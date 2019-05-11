@@ -1,5 +1,5 @@
 import 'jest-extended';
-import { renderGraph } from '../src/render-graph';
+import { renderGraph } from '@src/render-graph';
 
 describe('render graph', () => {
   let display: string;

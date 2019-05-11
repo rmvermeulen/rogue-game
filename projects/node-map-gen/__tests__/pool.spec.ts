@@ -1,5 +1,5 @@
-import { Pool } from '../src/pool';
-import { createRNG } from '../src/random';
+import { Pool } from '@src/pool';
+import { createRNG } from '@src/random';
 
 describe('Shuffled pool', () => {
   let pool: Pool<number>;

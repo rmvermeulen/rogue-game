@@ -12,6 +12,9 @@ module.exports = {
       },
     },
   },
+  moduleNameMapper: {
+    '@src/(.*)': '<rootDir>/src/$1.ts',
+  },
   testRunner: 'jest-circus/runner',
   watchPlugins: [
     'jest-watch-typeahead/filename',
