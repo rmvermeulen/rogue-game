@@ -10,7 +10,8 @@ describe('natural number helper', () => {
     [-10.5, 10],
     [-10.5, 10],
     [NaN, NaN],
-  ])('converts %i to natural number %i', (n, expected) => {
+    [undefined, NaN],
+  ])('converts %s to natural number %s', (n, expected) => {
     expect(natural(n)).toBe(expected);
   });
 });
