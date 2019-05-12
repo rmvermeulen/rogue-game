@@ -1,11 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["jest-extended"],
-    "baseUrl": ".",
-    "paths": {
-      "@src/*": ["./src/*"]
-    }
+    "types": ["jest-extended"]
   },
   "include": ["__tests__/**/*"],
   "exclude": ["node_modules", "src/**/*"]
