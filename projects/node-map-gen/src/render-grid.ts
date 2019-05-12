@@ -4,6 +4,7 @@ import {
   aperture,
   compose,
   defaultTo,
+  filter,
   length,
   lensPath,
   map,
@@ -25,15 +26,18 @@ import {
   someColors,
   someColorsLength,
 } from './color-lists';
-import { Grid, ICell } from './grid';
+import { Grid, ICell, IRoom } from './grid';
 import { generate } from './utils';
 
-export const renderSimple = (grid: Grid, useColors: boolean = true): string => {
+export const renderSimple = (
+  grid: Grid,
+  useANSIColors: boolean = true,
+): string => {
   if (grid.listRooms().length > manyColorsLength) {
     // tslint:disable-next-line: no-parameter-reassignment
-    useColors = false;
+    useANSIColors = false;
   }
-  const colors = useColors
+  const colors = useANSIColors
     ? grid.cells.length <= someColorsLength
       ? someColors()
       : manyColors()
@@ -64,7 +68,7 @@ export const renderSimple = (grid: Grid, useColors: boolean = true): string => {
       .map((cell: ICell, index) => {
         let roomIdStr = cell.roomId.toString();
         const roomIdStrCharLength = roomIdStr.length;
-        if (useColors) {
+        if (useANSIColors) {
           const colorize = colors[cell.roomId % colors.length];
           roomIdStr = colorize(roomIdStr);
         }
@@ -89,31 +93,47 @@ export const renderSimple = (grid: Grid, useColors: boolean = true): string => {
 //   )(values);
 // };
 
+interface IGridRenderOptions {
+  // only return the graphic, not the lists
+  mapOnly?: boolean;
+  // colorize room numbers
+  useANSIColors?: boolean;
+  // single character used as padding
+  padCharacter?: string;
+}
+
 /** render the grid into a string
  * example output:
- * +----+----+---+----+-----+
- * | 10   10 | 2   2  | 200 |
- * +----+    +   +    +-----+
- * | 0  | 10 | 2   2  | 10  |
- * +    +    +   +    +-----+
- * | 0  | 10 | 2   2  | 0   |
- * +    +    +   +    +     +
- * | 0  | 10 | 2   2  | 0   |
+ * +---------+--------+-----+
+ * | 10   10 | 2    2 | 200 |
+ * +----+    |        +-----+
+ * |  0 | 10 | 2    2 |  10 |
+ * |    |    |        +-----+
+ * |  0 | 10 | 2    2 |   0 |
+ * |    |    |        |     |
+ * |  0 | 10 | 2    2 |   0 |
  * +    +----+---+----+-----+
- * | 0    0    0 | 10   10  |
- * +--- +----+---+----+-----+
+ * |  0    0   0 | 10   10  |
+ * +-------------+----------+
  *
  * room 0 size=9 cells=4,5,10,14,15,19,20,21,22
  * room 1 size=8 cells=0,1,6,9,11,16,23,24
  * room 2 size=8 cells=2,3,7,8,12,13,17,18
  */
 // tslint:disable-next-line: max-func-body-length
-export const renderGrid = (grid: Grid, useColors: boolean = false): string => {
+export const renderGrid = (
+  grid: Grid,
+  {
+    useANSIColors = false,
+    padCharacter = ' ',
+    mapOnly = false,
+  }: IGridRenderOptions = {},
+): string => {
   type WallStr = '|' | '+' | '-' | ' ';
 
   const columnWidths: number[] = generate(grid.width, () => 1);
 
-  const mapLinesA = generate(grid.height, y => {
+  const mapCellContents = generate(grid.height, y => {
     const row = grid.row(y);
     const roomIds = pluck('roomId', row);
     generate(grid.width, column => {
@@ -142,39 +162,42 @@ export const renderGrid = (grid: Grid, useColors: boolean = false): string => {
     walls.push('-');
   });
 
-  const topLine: WallStr[] = mapLinesA[0].map((value: number | WallStr) =>
+  const topLine: WallStr[] = mapCellContents[0].map((value: number | WallStr) =>
     typeof value === 'number' ? '-' : value === '|' ? '+' : '-',
   );
-  const lastMapLine = mapLinesA[grid.height - 1];
+  const lastMapLine = mapCellContents[grid.height - 1];
   const bottomLine: WallStr[] = lastMapLine.map((value: number | WallStr) =>
     typeof value === 'number' ? '-' : value === '|' ? '+' : '-',
   );
-  const mapLinesB = [
+  const mapLinesFromCells = [
     topLine,
     ...unnest(
-      [...aperture(2, mapLinesA), [lastMapLine, undefined]].map(([a, b]) => {
-        if (b === undefined) {
-          return [a, bottomLine];
-        }
-        const walls = generate(a.length, x => {
-          const ax = a[x];
-          const bx = b[x];
-
-          if (typeof ax === 'number') {
-            return ax === bx ? ' ' : '-';
+      // list like [[0,1],[1,2], ...], with extra last entry
+      [...aperture(2, mapCellContents), [lastMapLine, undefined]].map(
+        ([currentLine, nextLine]) => {
+          if (nextLine === undefined) {
+            return [currentLine, bottomLine];
           }
+          const wallLine = generate(currentLine.length, x => {
+            const ax = currentLine[x];
+            const bx = nextLine[x];
 
-          return ax === bx ? '|' : '+';
-        });
+            if (typeof ax === 'number') {
+              return ax === bx ? ' ' : '-';
+            }
 
-        return [a, walls];
-      }),
+            return ax === bx ? '|' : '+';
+          });
+
+          return [currentLine, wallLine];
+        },
+      ),
     ),
   ];
 
-  assert.lengthOf(mapLinesB, grid.height * 2 + 1);
+  assert.lengthOf(mapLinesFromCells, grid.height * 2 + 1);
 
-  let updated = mapLinesB;
+  let updated = mapLinesFromCells;
 
   generate(grid.height + 1, gy => {
     generate(grid.width + 1, gx => {
@@ -183,7 +206,7 @@ export const renderGrid = (grid: Grid, useColors: boolean = false): string => {
       // const cornerPart = mapLinesB[y * 2][x * 2];
       const [n, s, e, w] = [[y - 1, x], [y + 1, x], [y, x - 1], [y, x + 1]]
         // tslint:disable-next-line: no-any no-unsafe-any
-        .map(p => path(p as any[], mapLinesB))
+        .map(p => path(p as any[], mapLinesFromCells))
         .map(defaultTo(' '));
       const assignField = (char: string) => {
         // tslint:disable-next-line: no-any
@@ -225,32 +248,31 @@ export const renderGrid = (grid: Grid, useColors: boolean = false): string => {
     return newLine.join('');
   });
 
-  const rooms = sort(subtract, grid.listRooms())
-    .map(id => grid.findRoomById(id))
-    .filter(Boolean);
-
-  const roomFragments = rooms.map(
-    ({ id, size, cells }) => `room ${id} size=${size} cells=${cells}`,
-  );
-
   const renderedString = lineFragments.join(os.EOL);
 
-  if (useColors) {
+  let postProcessedString = renderedString;
+
+  if (useANSIColors) {
     const colors =
       grid.cells.length <= someColorsLength ? someColors() : manyColors();
     const getColorizer = (n: number) => colors[n % colors.length];
 
-    return [
-      renderedString
-        .split(' ')
-        .map(
-          when(test(/^\d+$/), (str: string) => getColorizer(Number(str))(str)),
-        )
-        .join(' '),
-      '',
-      ...roomFragments,
-    ].join(os.EOL);
+    postProcessedString = renderedString
+      .split(' ')
+      .map(when(test(/^\d+$/), (str: string) => getColorizer(Number(str))(str)))
+      .join(' ');
   }
+
+  if (mapOnly) {
+    return postProcessedString;
+  }
+
+  const roomFragments = compose<number[], number[], IRoom[], IRoom[], string[]>(
+    map(({ id, size, cells }) => `room ${id} size=${size} cells=${cells}`),
+    filter(Boolean),
+    map(id => grid.findRoomById(id)),
+    sort(subtract),
+  )(grid.listRooms());
 
   return [renderedString, '', ...roomFragments].join(os.EOL);
 };

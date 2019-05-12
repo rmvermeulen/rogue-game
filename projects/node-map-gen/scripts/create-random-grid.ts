@@ -2,10 +2,11 @@
 
 import * as parseArgv from 'minimist';
 import { createRNG } from '../src/create-rng';
-import { compose, tap, zipObj } from 'ramda';
 import { Grid, IGridOptions } from '../src/grid';
 import { renderGrid } from '../src/render-grid';
 import { generate } from '../src/utils';
+import { assoc, compose, partialRight, tap, zipObj } from 'ramda';
+import { stringify } from 'yaml';
 
 // tslint:disable no-console strict-boolean-expressions
 
@@ -51,14 +52,27 @@ const roomCount = readRangeOrNumber(options.roomCount);
 const { pickMethod } = options;
 // tslint:enable no-unsafe-any
 
-compose(
-  console.log,
-  renderGrid,
+const display = compose(
+  partialRight(renderGrid, [
+    {
+      useANSIColors: true,
+      mapOnly: true,
+    },
+  ]),
   Grid.CREATE,
-  tap(gridOptions => console.log(JSON.stringify(gridOptions, undefined, 2))),
+  assoc('rng', rng),
+  tap(
+    compose(
+      console.log,
+      stringify,
+    ),
+  ),
 )({
   width,
   height,
   roomCount,
+  pickMethod,
   rng,
 });
+
+console.log(display);

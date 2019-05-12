@@ -15,10 +15,8 @@ import {
   unnest,
   whereEq,
 } from 'ramda';
-import { createRNG } from './create-rng';
+import { rng } from './create-rng';
 import { ICell } from './grid';
-
-const rng = createRNG(500);
 
 // tslint:disable-next-line: no-any
 export const generate = (flip(times) as unknown) as <T = any>(

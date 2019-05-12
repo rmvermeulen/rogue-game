@@ -7,7 +7,6 @@ import 'jest-extended';
 import * as os from 'os';
 import {
   compose,
-  converge,
   either,
   equals,
   groupBy,
@@ -16,19 +15,17 @@ import {
   partition,
   reject,
   split,
-  takeLastWhile,
-  takeWhile,
   test as testRE,
 } from 'ramda';
 import * as stripAnsi from 'strip-ansi';
 
 const toLines: (str: string) => string[] = split(os.EOL);
 
-const countSubstr = (str: string) =>
+const countSubstr = (substr: string) =>
   compose(
     x => x - 1,
     length,
-    split(str),
+    split(substr),
   );
 
 describe('Inline examples', () => {
@@ -44,7 +41,6 @@ describe('Inline examples', () => {
           y: Math.floor(id / h),
         })),
       ),
-      false,
     );
 
   test('3x3 grid', () => {
@@ -101,6 +97,20 @@ describe('Inline examples', () => {
   });
 });
 
+test('colors', () => {
+  const grid = Grid.CREATE({
+    width: 10,
+    height: 10,
+    roomCount: 20,
+    rng: createRNG(200),
+  });
+
+  const plain = renderGrid(grid);
+  const colored = renderGrid(grid, { useANSIColors: true });
+
+  expect(plain).toBe(stripAnsi(colored));
+});
+
 describe.each([
   [5, 5, 4],
   [10, 5, 4],
@@ -123,7 +133,10 @@ describe.each([
   });
 
   test('render', () => {
-    const display = renderGrid(grid, true);
+    const display = renderGrid(grid, {
+      useANSIColors: true,
+      mapOnly: true,
+    });
     expect(display).toMatchSnapshot();
 
     const plainDisplay = stripAnsi(display);
@@ -136,20 +149,9 @@ describe.each([
     // room line 2
     // room line 2
 
-    const [mapLines, roomLines] = compose<
-      string,
-      string[],
-      [string[], string[]]
-    >(
-      converge((a, b) => [a, b], [
-        takeWhile<string>(Boolean),
-        takeLastWhile<string>(Boolean),
-      ]),
-      toLines,
-    )(plainDisplay); // split on empty line
+    const mapLines = toLines(plainDisplay); // split on empty line
 
     expect(mapLines).toBeArray();
-    expect(roomLines).toBeArray();
 
     expect(
       reject(
@@ -173,8 +175,5 @@ describe.each([
 
     const vWalls = walls.map(countSubstr('+'));
     expect(hWalls).not.toSatisfyAll(equals(height + 1));
-
-    // room line regexp check
-    expect(roomLines).toSatisfyAll(testRE(/room \d+ size=\d+ cells=(\d+\,?)+/));
   });
 });
