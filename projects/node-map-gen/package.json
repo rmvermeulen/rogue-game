@@ -1,12 +1,9 @@
 {
   "private": true,
   "name": "node-map-gen",
-  "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
-  "license": "Apache-2.0",
-  "author": "Jakub Synowiec <github@jakubsynowiec.info>",
   "version": "0.0.0",
   "scripts": {
-    "pre-commit": "pretty-quick --write && lint-staged",
+    "pre-commit": "pretty-quick --staged && lint-staged",
     "pre-push": "(yarn lint & tsc --noEmit) && jest --ci",
     "build": "tsc -p tsconfig.release.json",
     "build:watch": "tsc -w -p tsconfig.release.json",
