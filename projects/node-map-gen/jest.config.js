@@ -16,6 +16,10 @@ module.exports = {
     '@src/(.*)': '<rootDir>/src/$1.ts',
   },
   testRunner: 'jest-circus/runner',
+  watchPathIgnorePatterns: [
+    '<rootDir>/node_modules/',
+    '<rootDir>/../node_modules/',
+  ],
   watchPlugins: [
     'jest-watch-typeahead/filename',
     'jest-watch-typeahead/testname',
