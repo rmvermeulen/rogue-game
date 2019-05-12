@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { random } from './random';
+import { rng } from './create-rng';
 
 const colors = [
   chalk.red,
@@ -18,7 +18,7 @@ const colors = [
 
 export const someColorsLength = colors.length;
 
-export const someColors = () => random.shuffle(colors);
+export const someColors = () => rng.shuffle(colors);
 
 const brights = [
   chalk.redBright,
@@ -37,4 +37,4 @@ const brights = [
 
 export const manyColorsLength = colors.length + brights.length;
 
-export const manyColors = () => random.shuffle(colors.concat(brights));
+export const manyColors = () => rng.shuffle(colors.concat(brights));

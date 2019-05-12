@@ -1,5 +1,5 @@
-import { compose, groupBy, identity, length, map } from 'ramda';
 import { generate, weightedPick } from '@src/utils';
+import { compose, groupBy, identity, length, map } from 'ramda';
 
 describe('simple weighted pick', () => {
   it('picks an earlier element more often than any later element', () => {
@@ -12,12 +12,14 @@ describe('simple weighted pick', () => {
       )(picks),
     ).toMatchInlineSnapshot(`
       Object {
-        "0": 45,
-        "1": 26,
-        "2": 13,
-        "3": 12,
-        "4": 3,
-        "8": 1,
+        "0": 41,
+        "1": 34,
+        "11": 1,
+        "2": 15,
+        "3": 2,
+        "4": 5,
+        "6": 1,
+        "7": 1,
       }
     `);
   });
@@ -31,14 +33,13 @@ describe('simple weighted pick', () => {
       )(picks),
     ).toMatchInlineSnapshot(`
       Object {
-        "0": 49,
+        "0": 50,
         "1": 23,
-        "2": 15,
-        "3": 8,
-        "4": 2,
-        "5": 1,
-        "8": 1,
-        "9": 1,
+        "2": 13,
+        "3": 10,
+        "4": 1,
+        "5": 2,
+        "6": 1,
       }
     `);
   });

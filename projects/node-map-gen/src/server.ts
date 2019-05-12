@@ -3,8 +3,8 @@ import * as express from 'express';
 import { Request, Response } from 'express';
 import * as os from 'os';
 import { evolve } from 'ramda';
+import { createRNG, rng } from './create-rng';
 import { Grid } from './grid';
-import { createRNG, random } from './random';
 import { renderGrid } from './render-grid';
 
 const app = express();
@@ -41,7 +41,7 @@ const doTheThing = (req: Request, res: Response) => {
   }
 
   const rng =
-    seed === undefined ? random : (console.log('create rng'), createRNG(seed));
+    seed === undefined ? rng : (console.log('create rng'), createRNG(seed));
 
   const grid = Grid.CREATE({
     width,

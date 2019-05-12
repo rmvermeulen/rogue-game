@@ -15,8 +15,10 @@ import {
   unnest,
   whereEq,
 } from 'ramda';
+import { createRNG } from './create-rng';
 import { ICell } from './grid';
-import { random } from './random';
+
+const rng = createRNG(500);
 
 // tslint:disable-next-line: no-any
 export const generate = (flip(times) as unknown) as <T = any>(
@@ -25,7 +27,7 @@ export const generate = (flip(times) as unknown) as <T = any>(
 ) => T[];
 
 export const weightedPick = <T>([item, ...rest]: T[]): T =>
-  rest.length === 0 ? item : random.bool() ? item : weightedPick(rest);
+  rest.length === 0 ? item : rng.bool() ? item : weightedPick(rest);
 
 export const natural = compose(
   curryN(2, Math.max)(1),
@@ -113,7 +115,7 @@ export const pickInitialRoomCells = (cells: ProtoCell[], roomCount: number) => {
   let pool = cells;
   const roomStartCells: ProtoCell[] = [];
   while (roomStartCells.length < roomCount) {
-    const cell = random.pickone(pool);
+    const cell = rng.pickone(pool);
     pool = withoutById([cell], pool) as typeof cells;
 
     // cells outside the grid don't matter

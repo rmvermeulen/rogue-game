@@ -1,4 +1,8 @@
 // tslint:disable no-import-side-effect no-implicit-dependencies
+import { createRNG } from '@src/create-rng';
+import { Grid } from '@src/grid';
+import { renderGrid } from '@src/render-grid';
+import '@src/strip-ansi.d';
 import 'jest-extended';
 import * as os from 'os';
 import {
@@ -17,10 +21,6 @@ import {
   test as testRE,
 } from 'ramda';
 import * as stripAnsi from 'strip-ansi';
-import { Grid } from '@src/grid';
-import { createRNG } from '@src/random';
-import { renderGrid } from '@src/render-grid';
-import '@src/strip-ansi.d';
 
 const toLines: (str: string) => string[] = split(os.EOL);
 

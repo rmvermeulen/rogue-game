@@ -1,10 +1,10 @@
 import * as os from 'os';
 
-import { compose, contains, filter, pluck, test as testRE, uniq } from 'ramda';
+import { createRNG } from '@src/create-rng';
 import { generateCells, IGeneratorOptions } from '@src/generator';
 import { Grid, ICell } from '@src/grid';
-import { createRNG } from '@src/random';
 import { renderGrid } from '@src/render-grid';
+import { compose, contains, filter, pluck, test as testRE, uniq } from 'ramda';
 
 describe.each`
   width | height | roomCount | pickMethod

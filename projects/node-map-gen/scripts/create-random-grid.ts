@@ -1,10 +1,10 @@
 #! /usr/bin/env ts-node
 
-import { Chance } from 'chance';
 import * as parseArgv from 'minimist';
+import { createRNG } from '../src/create-rng';
 import { compose, tap, zipObj } from 'ramda';
 import { Grid, IGridOptions } from '../src/grid';
-import { render } from '../src/render-grid';
+import { renderGrid } from '../src/render-grid';
 import { generate } from '../src/utils';
 
 // tslint:disable no-console strict-boolean-expressions
@@ -16,16 +16,20 @@ const options = parseArgv(process.argv.slice(2), {
     height: 'h',
     roomCount: 'r',
     pickMethod: 'm',
+    seed: 's',
   },
   default: {
     width: '4,16',
     height: '4,16',
     roomCount: '2,15',
     pickMethod: 'prefer closer',
+    seed: 12345,
   },
 });
 
-const random = new Chance();
+const seed = parseInt(options.seed, 10);
+const rng = createRNG(seed);
+
 const readRangeOrNumber = (value: string | number) => {
   if (typeof value === 'number') {
     return value;
@@ -37,7 +41,7 @@ const readRangeOrNumber = (value: string | number) => {
       .map(Number),
   );
 
-  return random.natural(naturalOptions);
+  return rng.natural(naturalOptions);
 };
 
 // tslint:disable no-unsafe-any
@@ -49,12 +53,12 @@ const { pickMethod } = options;
 
 compose(
   console.log,
-  render,
+  renderGrid,
   Grid.CREATE,
   tap(gridOptions => console.log(JSON.stringify(gridOptions, undefined, 2))),
 )({
   width,
   height,
   roomCount,
-  rng: random,
+  rng,
 });

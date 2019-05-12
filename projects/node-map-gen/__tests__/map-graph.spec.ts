@@ -1,10 +1,10 @@
 // tslint:disable no-implicit-dependencies
 
-import 'jest-extended';
-import { stringify } from 'yaml';
+import { createRNG } from '@src/create-rng';
 import { Grid } from '@src/grid';
 import { createGraph, MapNode } from '@src/map-graph';
-import { createRNG } from '@src/random';
+import 'jest-extended';
+import { stringify } from 'yaml';
 
 describe.each([
   [5, 5, 4],

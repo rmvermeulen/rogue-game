@@ -1,10 +1,10 @@
 // tslint:disable-next-line: no-import-side-effect no-implicit-dependencies
 import 'jest-extended';
 
-import { zip } from 'ramda';
+import { createRNG } from '@src/create-rng';
 import { Grid, ICell, IRoom } from '@src/grid';
-import { createRNG } from '@src/random';
 import { generate } from '@src/utils';
+import { zip } from 'ramda';
 
 describe.each([
   [5, 5, 2],
