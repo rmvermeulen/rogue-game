@@ -14,6 +14,7 @@
     "clean": "rimraf coverage build tmp",
     "lint": "tslint -t stylish -p tsconfig.json",
     "lint:test": "tslint -t stylish -p tsconfig.spec.json -c tslint.test.json",
+    "serve": "nodemon -e ts -w src --exec 'ts-node -r tsconfig-paths/register -T src/server.ts'",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch"
@@ -28,6 +29,7 @@
     "ramda": "^0.26.1",
     "ramda-adjunct": "^2.17.0",
     "strip-ansi": "^5.2.0",
+    "tsconfig-paths": "^3.8.0",
     "utility-types": "^3.6.1",
     "yaml": "^1.5.1"
   },
