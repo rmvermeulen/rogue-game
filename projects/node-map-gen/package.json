@@ -13,7 +13,7 @@
     "check-deps": "depcheck --skip-missing --ignore-bin-package --ignores $(cat .depcheckignore) || true",
     "clean": "rimraf coverage build tmp",
     "lint": "tslint -t stylish -p tsconfig.json",
-    "lint:test": "tslint -t stylish -p tsconfig.test.json -c tslint.test.json",
+    "lint:test": "tslint -t stylish -p tsconfig.spec.json -c tslint.test.json",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch"
