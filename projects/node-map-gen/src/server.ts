@@ -40,14 +40,11 @@ const doTheThing = (req: Request, res: Response) => {
     throw new Error(errors.join(os.EOL));
   }
 
-  const rng =
-    seed === undefined ? rng : (console.log('create rng'), createRNG(seed));
-
   const grid = Grid.CREATE({
     width,
     height,
     roomCount,
-    rng,
+    rng: seed === undefined ? rng : createRNG(seed),
   });
 
   return renderGrid(grid);
