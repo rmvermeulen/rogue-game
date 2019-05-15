@@ -5,8 +5,9 @@ const path = require('path');
 // after https://github.com/webpack/webpack/issues/3460 will be resolved.
 const { CheckerPlugin } = require('awesome-typescript-loader');
 
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   entry: './src/main.tsx',
@@ -16,6 +17,13 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    plugins: [
+      new TsconfigPathsPlugin({
+        /* override tsconfig 
+        https://github.com/dividab/tsconfig-paths-webpack-plugin#options
+        */
+      }),
+    ],
   },
   cache: true,
   mode: 'development',
@@ -32,7 +40,7 @@ module.exports = {
     new CheckerPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      title: 'Development',
+      title: 'Map stuff',
     }),
   ],
 };
