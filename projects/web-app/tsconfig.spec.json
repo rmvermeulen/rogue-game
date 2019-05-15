@@ -1,14 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": [
-      "jest-extended"
-    ]
+    "isolatedModules": false,
+    "types": ["jest", "jest-extended"]
   },
-  "include": [
-    "src/*.spec.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["__tests__/**/*.ts", "__tests__/**/*.tsx"],
+  "exclude": ["node_modules"]
 }
