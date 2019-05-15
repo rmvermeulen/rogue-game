@@ -9,7 +9,7 @@
     ] /* Specify library files to be included in the compilation. */,
     "jsx": "react" /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */,
     "isolatedModules": true /* Transpile each file as a separate module (similar to 'ts.transpileModule'). */,
-
+    "types": [],
     /* Strict Type-Checking Options */
     "strict": true /* Enable all strict type-checking options. */,
     /* Module Resolution Options */

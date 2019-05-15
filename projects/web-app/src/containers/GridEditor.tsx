@@ -1,111 +1,77 @@
-import { AxiosInstance } from 'axios';
-import { delay } from 'bluebird';
+import { resolve } from 'bluebird';
 import React from 'react';
 
 import { logger } from '@utils/logger';
 
-import { GridEditForm } from '@components/GridEditForm';
-import { GridInfoDisplay } from '@components/GridInfoDisplay';
+import { ApiContext } from '@containers/ApiContext';
 
-import { ErrorBoundary } from '@containers/ErrorBoundary';
+const debug = logger('grid-editor');
 
-import { GridDescription } from '@defs/grid';
-
-const apiDebounceMs = 300;
-
-const debug = logger('GridEditor');
-
-export interface GridEditorState {
-  completedRequests: number;
-  gridInfo: GridDescription;
-  loading: boolean;
-  data: null | {};
+// tslint:disable-next-line: no-empty-interface
+interface Props {}
+interface State {
+  data?: {};
+  error?: string;
 }
 
-export interface GridEditorProps {
-  server: AxiosInstance;
-}
+const GridForm: React.SFC = (props) => {
+  return <div>this will be a form</div>;
+};
 
-export class GridEditor extends React.Component<
-  GridEditorProps,
-  GridEditorState
-> {
-  public state = {
-    completedRequests: 0,
-    loading: false,
-    gridInfo: {
-      width: 10,
-      height: 10,
-      roomCount: 10,
-    },
-    data: null,
-  };
-  private cancelRequest?: () => void;
+export class GridEditor extends React.Component<Props, State> {
+  public static contextType = ApiContext;
+  private fetchTimer?: number;
   public componentDidMount() {
     debug('componentDidMount');
-    return this.fetch(this.state.gridInfo);
+    return this.fetch();
   }
   public render() {
-    debug('render');
-    const { data, gridInfo, loading, completedRequests } = this.state;
-
+    let display = <p>loading...</p>;
+    if (this.state) {
+      const { data, error } = this.state;
+      if (data) {
+        display = <pre>{data}</pre>;
+      } else if (error) {
+        display = <strong>{error}</strong>;
+      }
+    }
     return (
-      <ErrorBoundary>
-        <GridEditForm
-          grid={gridInfo}
-          submit={(update: GridDescription) => {
-            this.setState({ gridInfo: update });
-            this.fetch(update);
-          }}
-        />
-        <p>completed requests: {completedRequests}</p>
-        <pre>{data}</pre>
-        <GridInfoDisplay grid={data} />
-        {loading && <p>loading...</p>}
-      </ErrorBoundary>
+      <>
+        <div>grid editor</div>
+        <GridForm />
+        {display}
+      </>
     );
   }
 
-  private async fetch({
-    width,
-    height,
-    roomCount,
-    seed,
-  }: Partial<GridDescription> = {}) {
-    if (this.cancelRequest) {
-      this.cancelRequest();
-    }
-    this.setState({ loading: true });
-    let isCancelled = false;
-    this.cancelRequest = () => {
-      isCancelled = true;
-      this.cancelRequest = undefined;
-    };
+  public componentWillUnmount() {
+    this.clearFetchTimer();
+  }
 
-    delay(apiDebounceMs)
-      .then(() => {
-        if (isCancelled) {
-          return;
-        }
-        return this.props.server
-          .get<GridDescription>('/grid', {
-            params: {
-              width,
-              height,
-              roomCount,
-              seed,
-            },
-          })
-          .then(({ data }) =>
-            this.setState({
-              data,
-              completedRequests: this.state.completedRequests + 1,
-            }),
-          );
-      })
+  private clearFetchTimer() {
+    clearTimeout(this.fetchTimer);
+    this.fetchTimer = undefined;
+  }
+
+  private async fetch() {
+    this.clearFetchTimer();
+
+    return resolve(
+      this.context.get('/grid', {
+        params: {
+          width: 25,
+          height: 15,
+          roomCount: 50,
+          seed: 999,
+        },
+        json: true,
+      }),
+    )
+      .then(({ data }) => this.setState({ data }))
+      .tapCatch(console.error)
+      .catch((error: Error) => this.setState({ error: error.message }))
       .finally(() => {
-        this.setState({ loading: false });
-        this.cancelRequest = undefined;
+        this.fetchTimer = setTimeout(() => this.fetch(), 5e3);
       });
   }
 }
