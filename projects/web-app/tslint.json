@@ -10,7 +10,17 @@
     "ordered-imports": [
       true,
       {
-        "grouped-imports": true
+        "grouped-imports": true,
+        "groups": [
+          "^\\w",
+          "^\\.\\.",
+          "^\\.",
+          "^@src",
+          "^@utils",
+          "^@components",
+          "^@containers",
+          "^@defs"
+        ]
       }
     ],
     "interface-name": false
