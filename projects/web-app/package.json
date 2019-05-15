@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "test": "jest",
-    "serve": "nodemon -w webpack.config.js --exec 'yarn webpack-dev-server'",
+    "serve": "nodemon -w webpack.config.js --exec 'yarn run dev-server'",
+    "dev-server": "webpack-dev-server",
     "build": "webpack",
     "lint": "tslint -p tsconfig.json -t stylish",
     "pre-commit": "pretty-quick --staged && lint-staged",
