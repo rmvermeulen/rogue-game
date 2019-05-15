@@ -1,13 +1,14 @@
+import axios from 'axios';
 import React from 'react';
 import { render } from 'react-dom';
-import { create } from 'axios';
 
-import { GridEditor } from './GridEditor';
-import { logger } from './logger';
+import { logger } from '@utils/logger';
+
+import { GridEditor } from '@containers/GridEditor';
 
 const debug = logger('main');
 
-export const axios = create({
+const server = axios.create({
   baseURL: 'http://localhost:3000/',
   timeout: 1000,
   //   headers: {'X-Custom-Header': 'foobar'}
@@ -15,6 +16,6 @@ export const axios = create({
 
 const container = document.createElement('div');
 document.body.appendChild(container);
-render(<GridEditor />, container);
+render(<GridEditor server={server} />, container);
 
 debug('App running, react rendering');
