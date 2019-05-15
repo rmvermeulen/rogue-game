@@ -67,9 +67,7 @@ export class GridEditor extends React.Component<Props, State> {
         json: true,
       }),
     )
-      .then(({ data }) => this.setState({ data }))
-      .tapCatch(console.error)
-      .catch((error: Error) => this.setState({ error: error.message }))
+      .asCallback((error, data) => this.setState({ data, error }))
       .finally(() => {
         this.fetchTimer = setTimeout(() => this.fetch(), 5e3);
       });
