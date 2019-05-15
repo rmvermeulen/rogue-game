@@ -1,5 +1,6 @@
 import * as cors from 'cors';
 import * as express from 'express';
+// tslint:disable-next-line: no-duplicate-imports
 import { Request, Response } from 'express';
 import * as os from 'os';
 import { evolve } from 'ramda';
@@ -10,14 +11,21 @@ import { renderGrid } from './render-grid';
 const app = express();
 app.use(cors());
 
+type GridParams = {
+  width: string;
+  height: string;
+  roomCount: string;
+  seed: string;
+};
+
 const doTheThing = (req: Request, res: Response) => {
-  console.log(req.query);
   const { width, height, roomCount, seed } = evolve({
     width: parseInt,
     height: parseInt,
     roomCount: parseInt,
     seed: parseInt,
-  })(req.query);
+  })(req.query as GridParams);
+  // tslint:disable-next-line: no-console
   console.log({
     width,
     height,
@@ -55,5 +63,6 @@ app.get('/grid', (req, res) => {
 });
 
 app.listen(3000, () => {
+  // tslint:disable-next-line: no-console
   console.log('server on localhost:3000');
 });
