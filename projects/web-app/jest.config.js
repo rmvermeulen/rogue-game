@@ -5,7 +5,7 @@ module.exports = {
   verbose: true,
   collectCoverage: false,
   collectCoverageFrom: ['src/**/*.{ts,tsx}'],
-  coveragePathIgnorePatterns: ['setupJest'],
+  coveragePathIgnorePatterns: ['\\.d\\.ts$'],
   moduleNameMapper: {
     '@utils/(.*)': '<rootDir>/src/utils/$1',
     '@defs/(.*)': '<rootDir>/src/defs/$1.d.ts',
