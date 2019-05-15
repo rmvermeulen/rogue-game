@@ -2,7 +2,7 @@ import { assoc } from 'ramda';
 import React, { InputHTMLAttributes, useState } from 'react';
 import styled from 'styled-components';
 
-import { fromEvent } from '@utils/events';
+import { fromCheckbox, fromEventNum } from '@utils/events';
 import { logger } from '@utils/logger';
 
 import { GridDescription } from '@defs/grid';
@@ -54,7 +54,7 @@ export const GridEditForm: React.SFC<IGridEditFormProps> = ({
           name="width"
           value={width}
           type="number"
-          onChange={fromEvent(set('width'))}
+          onChange={fromEventNum(set('width'))}
         >
           Width
         </LabeledInput>
@@ -62,7 +62,7 @@ export const GridEditForm: React.SFC<IGridEditFormProps> = ({
           name="height"
           value={height}
           type="number"
-          onChange={fromEvent(set('height'))}
+          onChange={fromEventNum(set('height'))}
         >
           Height
         </LabeledInput>
@@ -70,23 +70,15 @@ export const GridEditForm: React.SFC<IGridEditFormProps> = ({
           name="roomCount"
           value={roomCount}
           type="number"
-          onChange={fromEvent(set('roomCount'))}
+          onChange={fromEventNum(set('roomCount'))}
         >
           The amount of rooms
         </LabeledInput>
-        {/* <LabeledInput
-          name="seedIsRandom"
-          checked={seedIsRandom}
-          type="checkbox"
-          onChange={(e) => setSeedIsRandom(e.target.checked)}
-        >
-          Use a random seed each time
-        </LabeledInput> */}
         <LabeledInput
           name="seed"
           value={seed}
           type="number"
-          onChange={fromEvent(set('seed'))}
+          onChange={fromEventNum(set('seed'))}
           disabled={seedIsRandom}
         >
           Seed (random
@@ -95,7 +87,7 @@ export const GridEditForm: React.SFC<IGridEditFormProps> = ({
               name="seedIsRandom"
               checked={seedIsRandom}
               type="checkbox"
-              onChange={(e) => setSeedIsRandom(e.target.checked)}
+              onChange={fromCheckbox(setSeedIsRandom)}
             />
           </span>
           )
