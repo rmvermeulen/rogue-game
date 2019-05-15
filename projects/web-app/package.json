@@ -13,6 +13,7 @@
   "devDependencies": {
     "@types/debug": "^4.1.4",
     "@types/jest": "^24.0.12",
+    "@types/ramda": "types/npm-ramda#dist",
     "@types/react": "^16.8.17",
     "@types/react-dom": "^16.8.4",
     "awesome-typescript-loader": "^5.2.1",
@@ -26,6 +27,7 @@
     "prettier-package-json": "^2.1.0",
     "source-map-loader": "^0.2.4",
     "ts-jest": "^24.0.2",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
     "tslint": "^5.16.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-eslint-rules": "^5.4.0",
@@ -40,7 +42,7 @@
     "@types/styled-components": "^4.1.14",
     "axios": "^0.18.0",
     "bluebird": "^3.5.4",
-    "cors": "^2.8.5",
+    "ramda": "^0.26.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "styled-components": "^4.2.0"
