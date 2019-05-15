@@ -1,9 +1,7 @@
 import * as cors from 'cors';
 import * as express from 'express';
-// tslint:disable-next-line: no-duplicate-imports
-import { Request, Response } from 'express';
 import * as os from 'os';
-import { evolve } from 'ramda';
+import { evolve, omit } from 'ramda';
 import { createRNG, rng } from './create-rng';
 import { Grid } from './grid';
 import { renderGrid } from './render-grid';
@@ -11,27 +9,24 @@ import { renderGrid } from './render-grid';
 const app = express();
 app.use(cors());
 
-type GridParams = {
-  width: string;
-  height: string;
-  roomCount: string;
-  seed: string;
+type GridOptions<T> = {
+  width: T;
+  height: T;
+  roomCount: T;
+  seed: T;
 };
 
-const doTheThing = (req: Request, res: Response) => {
-  const { width, height, roomCount, seed } = evolve({
-    width: parseInt,
-    height: parseInt,
-    roomCount: parseInt,
-    seed: parseInt,
-  })(req.query as GridParams);
-  // tslint:disable-next-line: no-console
-  console.log({
-    width,
-    height,
-    roomCount,
-    seed,
-  });
+const doTheThing = (params: Partial<GridOptions<string>> = {}) => {
+  const { width, height, roomCount, seed } = evolve(
+    {
+      width: parseInt,
+      height: parseInt,
+      roomCount: parseInt,
+      seed: parseInt,
+    },
+    // tslint:disable-next-line: no-any
+    params as any,
+  ) as Partial<GridOptions<number>>;
 
   const errors = [];
 
@@ -55,11 +50,12 @@ const doTheThing = (req: Request, res: Response) => {
     rng: seed === undefined ? rng : createRNG(seed),
   });
 
-  return renderGrid(grid);
+  return grid.toObject();
 };
 
 app.get('/grid', (req, res) => {
-  res.send(doTheThing(req, res));
+  // tslint:disable-next-line: no-unsafe-any
+  res.send(doTheThing(req.query));
 });
 
 app.listen(3000, () => {
