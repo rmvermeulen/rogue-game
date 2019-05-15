@@ -1,7 +1,7 @@
 import * as cors from 'cors';
 import * as express from 'express';
 import * as os from 'os';
-import { evolve, omit } from 'ramda';
+import { evolve } from 'ramda';
 import { createRNG, rng } from './create-rng';
 import { Grid } from './grid';
 import { renderGrid } from './render-grid';
@@ -16,7 +16,7 @@ type GridOptions<T> = {
   seed: T;
 };
 
-const doTheThing = (params: Partial<GridOptions<string>> = {}) => {
+const createGridFromQuery = (params: Partial<GridOptions<string>> = {}) => {
   const { width, height, roomCount, seed } = evolve(
     {
       width: parseInt,
@@ -43,19 +43,24 @@ const doTheThing = (params: Partial<GridOptions<string>> = {}) => {
     throw new Error(errors.join(os.EOL));
   }
 
-  const grid = Grid.CREATE({
+  return Grid.CREATE({
     width,
     height,
     roomCount,
     rng: seed === undefined ? rng : createRNG(seed),
   });
-
-  return grid.toObject();
 };
 
 app.get('/grid', (req, res) => {
   // tslint:disable-next-line: no-unsafe-any
-  res.send(doTheThing(req.query));
+  const grid = createGridFromQuery(req.query);
+  res.send(grid.toObject());
+});
+
+app.get('/grid/rendered', (req, res) => {
+  // tslint:disable-next-line: no-unsafe-any
+  const grid = createGridFromQuery(req.query);
+  res.send(renderGrid(grid));
 });
 
 app.listen(3000, () => {
