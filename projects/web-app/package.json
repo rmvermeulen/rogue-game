@@ -18,6 +18,7 @@
     "@types/ramda": "types/npm-ramda#dist",
     "@types/react": "^16.8.17",
     "@types/react-dom": "^16.8.4",
+    "@types/styled-components": "^4.1.15",
     "awesome-typescript-loader": "^5.2.1",
     "clean-webpack-plugin": "^2.0.2",
     "config-presets": "^1.1.16",
@@ -36,12 +37,10 @@
     "typescript": "^3.4.5",
     "webpack": "^4.31.0",
     "webpack-cli": "^3.3.2",
-    "webpack-dev-server": "^3.3.1"
+    "webpack-dev-server": "^3.3.1",
+    "@types/bluebird": "^3.5.26"
   },
   "dependencies": {
-    "@types/bluebird": "^3.5.26",
-    "@types/cors": "^2.8.5",
-    "@types/styled-components": "^4.1.14",
     "axios": "^0.18.0",
     "bluebird": "^3.5.4",
     "ramda": "^0.26.1",
