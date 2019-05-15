@@ -3,7 +3,8 @@ module.exports = {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['jest-extended', 'tsconfig-paths/register'],
   verbose: true,
-  collectCoverage: true,
+  collectCoverage: false,
+  collectCoverageFrom: ['src/**/*.{ts,tsx}'],
   coveragePathIgnorePatterns: ['setupJest'],
   moduleNameMapper: {
     '@utils/(.*)': '<rootDir>/src/utils/$1',
