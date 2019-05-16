@@ -7,9 +7,7 @@ module.exports = {
   coveragePathIgnorePatterns: ['.json', '.d.ts'],
   globals: {
     'ts-jest': {
-      diagnostics: {
-        warnOnly: true,
-      },
+      diagnostics: false,
     },
   },
   moduleNameMapper: {
