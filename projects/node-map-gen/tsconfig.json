@@ -10,7 +10,6 @@
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
     "importHelpers": true,
-    "isolatedModules": true,
     "jsx": "react",
     "alwaysStrict": true,
     "sourceMap": true,
