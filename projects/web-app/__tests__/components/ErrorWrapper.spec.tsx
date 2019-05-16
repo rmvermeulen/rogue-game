@@ -2,10 +2,11 @@ import React from 'react';
 import renderer from 'react-test-renderer';
 
 import { ErrorWrapper } from '@components/ErrorWrapper';
+
 describe('Error wrapper', () => {
   it('renders', () => {
-    const rendered = renderer.create(<ErrorWrapper message="Test error" />);
-    expect(rendered).toMatchInlineSnapshot(`
+    const testDOM = renderer.create(<ErrorWrapper message="Test error" />);
+    expect(testDOM.toJSON()).toMatchInlineSnapshot(`
       <div
         className="sc-bdVaJa jxCGKD"
       >
