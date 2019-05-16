@@ -99,7 +99,7 @@ interface IGridRenderOptions {
   // colorize room numbers
   useANSIColors?: boolean;
   // single character used as padding
-  padCharacter?: string;
+  padding?: string;
 }
 
 /** render the grid into a string
@@ -125,7 +125,7 @@ export const renderGrid = (
   grid: Grid,
   {
     useANSIColors = false,
-    padCharacter = ' ',
+    padding = ' ',
     mapOnly = false,
   }: IGridRenderOptions = {},
 ): string => {
@@ -228,6 +228,7 @@ export const renderGrid = (
     });
   });
 
+  const totalPaddingSize = padding.length * 2;
   const lineFragments = updated.map((chunks, y) => {
     const newLine = chunks.map(String).map((chunk, x) => {
       const isRoomCenterX = x % 2 === 1;
@@ -235,14 +236,14 @@ export const renderGrid = (
         return chunk;
       }
       const isRoomCenterY = y % 2 === 1;
-      const width = defaultTo(1, columnWidths[(x - 1) / 2]);
+      const targetWidth = defaultTo(1, columnWidths[(x - 1) / 2]);
 
-      const padded = isRoomCenterY
-        ? ` ${chunk.padStart(width)} `
-        : chunk.repeat(width + 2);
-      assert.lengthOf(padded, width + 2);
+      const paddedRoomId = isRoomCenterY
+        ? `${padding}${chunk.padStart(targetWidth)}${padding}`
+        : chunk.repeat(targetWidth + totalPaddingSize);
+      assert.lengthOf(paddedRoomId, targetWidth + totalPaddingSize);
 
-      return padded;
+      return paddedRoomId;
     });
 
     return newLine.join('');

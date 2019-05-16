@@ -29,7 +29,7 @@ const countSubstr = (substr: string) =>
   );
 
 describe('Inline examples', () => {
-  const renderCells = (w: number, h: number, roomIds: number[]) =>
+  const renderCells = (w: number, h: number, roomIds: number[], options?: {}) =>
     renderGrid(
       Grid.FROM_CELLS(
         w,
@@ -41,6 +41,7 @@ describe('Inline examples', () => {
           y: Math.floor(id / h),
         })),
       ),
+      { mapOnly: true, ...options },
     );
 
   test('3x3 grid', () => {
@@ -51,18 +52,32 @@ describe('Inline examples', () => {
       2, 2, 2
     ]
     expect(renderCells(3, 3, roomIds)).toMatchInlineSnapshot(`
-      "+-----------+
-      | 0   0   0 |
-      +-----------+
-      | 1   1   1 |
-      +-----------+
-      | 2   2   2 |
-      +-----------+
+            "+-----------+
+            | 0   0   0 |
+            +-----------+
+            | 1   1   1 |
+            +-----------+
+            | 2   2   2 |
+            +-----------+"
+        `);
+  });
 
-      room 0 size=3 cells=0,1,2
-      room 1 size=3 cells=3,4,5
-      room 2 size=3 cells=6,7,8"
-    `);
+  test('3x3 grid, different padding', () => {
+    // prettier-ignore
+    const roomIds = [
+      0, 0, 0,
+      1, 1, 1,
+      2, 2, 2
+    ]
+    expect(renderCells(3, 3, roomIds, { padding: '' })).toMatchInlineSnapshot(`
+            "+-----+
+            |0 0 0|
+            +-----+
+            |1 1 1|
+            +-----+
+            |2 2 2|
+            +-----+"
+        `);
   });
 
   test('5x5 grid', () => {
@@ -75,24 +90,41 @@ describe('Inline examples', () => {
       5, 5, 5, 5, 5,
     ]
     expect(renderCells(5, 5, roomIds)).toMatchInlineSnapshot(`
-      "+---------------+---+
-      | 0   0   0   0 | 2 |
-      +-----------+---+   |
-      | 1   1   1 | 2   2 |
-      +-------+---+---+---+
-      | 4   4 | 5   5 | 3 |
-      |       |   +---+   |
-      | 4   4 | 5 | 3   3 |
-      +-------+   +-------+
-      | 5   5   5   5   5 |
-      +-------------------+
-
-      room 0 size=4 cells=0,1,2,3
-      room 1 size=3 cells=5,6,7
-      room 2 size=3 cells=4,8,9
-      room 3 size=3 cells=14,18,19
-      room 4 size=4 cells=10,11,15,16
-      room 5 size=8 cells=12,13,17,20,21,22,23,24"
+            "+---------------+---+
+            | 0   0   0   0 | 2 |
+            +-----------+---+   |
+            | 1   1   1 | 2   2 |
+            +-------+---+---+---+
+            | 4   4 | 5   5 | 3 |
+            |       |   +---+   |
+            | 4   4 | 5 | 3   3 |
+            +-------+   +-------+
+            | 5   5   5   5   5 |
+            +-------------------+"
+        `);
+  });
+  test('5x5 grid, different padding', () => {
+    // prettier-ignore
+    const roomIds = [
+      0, 0, 0, 0, 2,
+      1, 1, 1, 2, 2,
+      4, 4, 5, 5, 3,
+      4, 4, 5, 3, 3,
+      5, 5, 5, 5, 5,
+    ]
+    expect(renderCells(5, 5, roomIds, { padding: '-$-' }))
+      .toMatchInlineSnapshot(`
+      "+-------------------------------+-------+
+      |-$-0-$- -$-0-$- -$-0-$- -$-0-$-|-$-2-$-|
+      +-----------------------+-------+       |
+      |-$-1-$- -$-1-$- -$-1-$-|-$-2-$- -$-2-$-|
+      +---------------+-------+-------+-------+
+      |-$-4-$- -$-4-$-|-$-5-$- -$-5-$-|-$-3-$-|
+      |               |       +-------+       |
+      |-$-4-$- -$-4-$-|-$-5-$-|-$-3-$- -$-3-$-|
+      +---------------+       +---------------+
+      |-$-5-$- -$-5-$- -$-5-$- -$-5-$- -$-5-$-|
+      +---------------------------------------+"
     `);
   });
 });
@@ -106,7 +138,7 @@ test('colors', () => {
   });
 
   const plain = renderGrid(grid);
-  const colored = renderGrid(grid, { useANSIColors: true });
+  const colored = renderGrid(grid, {});
 
   expect(plain).toBe(stripAnsi(colored));
 });
@@ -134,7 +166,6 @@ describe.each([
 
   test('render', () => {
     const display = renderGrid(grid, {
-      useANSIColors: true,
       mapOnly: true,
     });
     expect(display).toMatchSnapshot();
