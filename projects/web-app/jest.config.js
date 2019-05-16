@@ -15,10 +15,8 @@ module.exports = {
   },
   globals: {
     'ts-jest': {
-      diagnostics: {
-        warnOnly: true,
-        tsConfig: 'tsconfig.spec.json',
-      },
+      tsConfig: 'tsconfig.spec.json',
+      diagnostics: false,
     },
   },
 };
