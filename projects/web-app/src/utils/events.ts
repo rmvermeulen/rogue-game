@@ -3,18 +3,18 @@ import { ChangeEvent } from 'react';
 
 export type Event = ChangeEvent<HTMLInputElement>;
 
-const callFnWithEventTargetProp = (prop: keyof Event['target']) => (
-  fn: (value: string) => void,
+const callFnWithEventTargetProp = <T = string>(prop: keyof Event['target']) => (
+  fn: (value: T) => void,
 ) =>
-  compose<Event, string, void>(
+  compose<Event, T, void>(
     fn,
     path(['target', prop]) as any,
   );
 
 export const fromEvent = callFnWithEventTargetProp('value');
 
-export const fromEventNum = callFnWithEventTargetProp('valueAsNumber');
+export const fromEventNum = callFnWithEventTargetProp<number>('valueAsNumber');
 
-export const fromEventDate = callFnWithEventTargetProp('valueAsDate');
+export const fromEventDate = callFnWithEventTargetProp<Date>('valueAsDate');
 
-export const fromCheckbox = callFnWithEventTargetProp('checked');
+export const fromCheckbox = callFnWithEventTargetProp<boolean>('checked');
